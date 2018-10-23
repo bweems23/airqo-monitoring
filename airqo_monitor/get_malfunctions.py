@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from werkzeug.contrib.cache import SimpleCache
 
 from airqo_monitor.format_data import get_and_format_data_for_all_channels
 from airqo_monitor.constants import (
@@ -10,6 +11,8 @@ from airqo_monitor.constants import (
     NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION,
     MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS,
 )
+
+cache = SimpleCache()
 
 
 def _get_channel_malfunctions(channel_data):
@@ -69,6 +72,7 @@ def _sensor_is_reporting_outliers(channel_data):
     extreme_reads = [entry for entry in channel_data[-1 * num_points:] if is_outlier(float(entry.pm_2_5))]
     return len(extreme_reads) > num_points * ALLOWABLE_OUTLIER_SENSOR_RATIO
 
+
 def get_all_channel_malfunctions():
     """Generate a list of malfunctions for all channels.
 
@@ -87,3 +91,11 @@ def get_all_channel_malfunctions():
 
 
     return malfunctions
+
+
+def get_all_channel_malfunctions_cached():
+    cached_value = cache.get('channel-malfunctions')
+    if cached_value is None:
+        cached_value = get_all_channel_malfunctions()
+        cache.set('channel-malfunctions', cached_value, timeout=10 * 60)
+    return cached_value
