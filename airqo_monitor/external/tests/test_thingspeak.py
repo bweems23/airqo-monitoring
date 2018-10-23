@@ -110,6 +110,8 @@ class TestThingspeakAPI(unittest.TestCase):
 
         make_get_call_mocker.assert_called_once_with(THINGSPEAK_CHANNELS_LIST_URL)
 
-    def test_get_api_key_for_channel(self):
-        api_key = get_api_key_for_channel(295702)
-        assert api_key == 'FOJKXUC6OSXG2X43'
+    @mock.patch('airqo_monitor.external.thingspeak.os.environ.get')
+    def test_get_api_key_for_channel(self, env_var_mocker):
+        env_var_mocker.return_value = 'test_key'
+        api_key = get_api_key_for_channel(123)
+        assert api_key == 'test_key'
