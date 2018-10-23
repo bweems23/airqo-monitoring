@@ -115,3 +115,7 @@ class TestThingspeakAPI(unittest.TestCase):
         env_var_mocker.return_value = 'test_key'
         api_key = get_api_key_for_channel(123)
         assert api_key == 'test_key'
+
+    def test_get_api_key_for_channel_doesnt_crash_if_no_key(self):
+        api_key = get_api_key_for_channel(123)
+        assert api_key is None
