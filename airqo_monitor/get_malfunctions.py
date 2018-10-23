@@ -79,7 +79,7 @@ def get_all_channel_malfunctions():
     Returns: A dict keyed by the channel id. The value is a list of potential concerns about a sensor.
     """
     malfunctions = []
-    start_time = datetime.utcnow() - timedelta(days=1)
+    start_time = datetime.utcnow() - timedelta(minutes=30)
     data = get_and_format_data_for_all_channels(start_time=start_time)
     for channel_id, channel_data in data.items():
         malfunctions.append(
