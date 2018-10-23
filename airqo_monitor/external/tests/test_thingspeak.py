@@ -3,12 +3,13 @@ import unittest
 
 from datetime import datetime, timedelta
 
-from constants import (
+from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
 )
-from external.thingspeak import (
+from airqo_monitor.external.thingspeak import (
     get_all_channel_ids,
+    get_api_key_for_channel,
     get_data_for_channel,
 )
 
@@ -55,7 +56,7 @@ class TestThingspeakAPI(unittest.TestCase):
             ]
     }
 
-    @mock.patch('external.thingspeak.make_post_call')
+    @mock.patch('airqo_monitor.external.thingspeak.make_post_call')
     def test_get_data_for_channel_basic(self, make_post_call_mocker):
         make_post_call_mocker.return_value = self.sample_feeds_list_response
 
@@ -63,7 +64,7 @@ class TestThingspeakAPI(unittest.TestCase):
 
         assert len(result) == 3
 
-    @mock.patch('external.thingspeak.make_post_call')
+    @mock.patch('airqo_monitor.external.thingspeak.make_post_call')
     def test_get_data_for_channel_with_times(self, make_post_call_mocker):
         make_post_call_mocker.return_value = self.sample_feeds_list_response
 
@@ -82,7 +83,7 @@ class TestThingspeakAPI(unittest.TestCase):
             end_time_string
         ))
 
-    @mock.patch('external.thingspeak.make_get_call')
+    @mock.patch('airqo_monitor.external.thingspeak.make_get_call')
     def test_get_all_channel_ids(self, make_get_call_mocker):
         make_get_call_mocker.return_value = {
             "channels": [dict(id=1, name='AIRQO'), dict(id=2, name='AIRQO')]
@@ -93,7 +94,7 @@ class TestThingspeakAPI(unittest.TestCase):
 
         make_get_call_mocker.assert_called_once_with(THINGSPEAK_CHANNELS_LIST_URL)
 
-    @mock.patch('external.thingspeak.make_get_call')
+    @mock.patch('airqo_monitor.external.thingspeak.make_get_call')
     def test_get_all_channel_ids_filters_correct_channels(self, make_get_call_mocker):
         make_get_call_mocker.return_value = {
             "channels": [
@@ -108,3 +109,7 @@ class TestThingspeakAPI(unittest.TestCase):
         assert channels == [1]
 
         make_get_call_mocker.assert_called_once_with(THINGSPEAK_CHANNELS_LIST_URL)
+
+    def test_get_api_key_for_channel(self):
+        api_key = get_api_key_for_channel(295702)
+        assert api_key == 'FOJKXUC6OSXG2X43'
