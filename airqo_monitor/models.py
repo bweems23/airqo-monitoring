@@ -19,7 +19,7 @@ class Incident(models.Model):
         ).values_list('malfunction_reason_id', flat=True)
 
     @property
-    def malfunction_reason_ids(self):
+    def malfunction_reasons(self):
         reason_ids = self.get_malfunction_reason_ids()
         return MalfunctionReason.objects.filter(
             id__in=list(reason_ids)

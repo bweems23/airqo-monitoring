@@ -1,7 +1,12 @@
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
 
-from .views import index
+from airqo_monitor.models import (
+    Incident,
+    IncidentMalfunctionReasonLink,
+    MalfunctionReason,
+)
+from airqo_monitor.views import index
 
 
 class TestIncidentModel(TestCase):
@@ -40,5 +45,7 @@ class TestIncidentMalfunctionReasonLink(TestCase):
             malfunction_reason=self.reason,
             incident=self.incident,
         )
-        assert self.reason.incidents == [self.incident]
-        assert self.incident.malfunction_reasons == [self.reason]
+        assert len(self.reason.incidents) == 1
+        assert self.reason.incidents[0] == self.incident
+        assert len(self.incident.malfunction_reasons) == 1
+        assert self.incident.malfunction_reasons[0] == self.reason
