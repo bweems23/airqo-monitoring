@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Device Malfunction Monitor</title>
+  </head>
+  <body>
+    <h1> Device Malfunction Monitor </h1>
+
+    {% if malfunctioning_channels %}
+        <p> The following channels need attention:</p>
+        <ul>
+            {% for channel in malfunctioning_channels %}
+                <li>
+                    <p><strong> Channel ID: {{ channel.channel_id }} </strong></p>
+                    <p>Reason for getting triggered:</p>
+                    <ul>
+                        <li>
+                            {% for reason in channel.possible_malfunction_reasons %}
+                                <p> {{ reason }} </p>
+                            {% endfor %}
+                        </li>
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        Woohoo! looks there are no malfunctions detected
+    {% endif %}
+  </body>
+</html>
