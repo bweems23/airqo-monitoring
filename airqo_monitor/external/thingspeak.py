@@ -1,14 +1,22 @@
 import json, requests
+import os
+
 from datetime import datetime, timedelta
 
 from airqo_monitor.constants import (
     AIR_QUALITY_MONITOR_KEYWORD,
+    API_KEY_CONFIG_VAR_NAME,
     DEFAULT_THINGSPEAK_FEEDS_INTERVAL_DAYS,
     INACTIVE_MONITOR_KEYWORD,
     THINGSPEAK_FEEDS_LIST_MAX_NUM_RESULTS,
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
 )
+
+def get_api_key_for_channel(channel_id):
+    var_name = API_KEY_CONFIG_VAR_NAME.format(str(channel_id))
+    api_key = os.environ.get(var_name)
+    return api_key
 
 
 def get_data_for_channel(channel, start_time=None, end_time=None):
@@ -29,6 +37,9 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
             start_time_string,
             datetime.strftime(end_time,'%Y-%m-%dT%H:%M:%SZ'),
         )
+        api_key = get_api_key_for_channel(channel)
+        if api_key:
+            full_url += '&api_key={}'.format(api_key)
         result = make_post_call(full_url)
 
         # This means we got an empty result set and are done
