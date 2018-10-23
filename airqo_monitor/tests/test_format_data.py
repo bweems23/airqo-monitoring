@@ -3,16 +3,16 @@ import unittest
 
 from datetime import datetime, timedelta
 
-from constants import (
+from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
 )
-from models.data_entry import DataEntry
-from external.thingspeak import (
+from airqo_monitor.objects.data_entry import DataEntry
+from airqo_monitor.external.thingspeak import (
     get_all_channel_ids,
     get_data_for_channel,
 )
-from format_data import (
+from airqo_monitor.format_data import (
     get_and_format_data_for_all_channels,
     get_and_format_data_for_channel,
 )
@@ -56,7 +56,7 @@ class TestFormatData(unittest.TestCase):
         },
     ]
 
-    @mock.patch('format_data.get_data_for_channel')
+    @mock.patch('airqo_monitor.format_data.get_data_for_channel')
     def test_get_and_format_data_for_channel(self, get_data_for_channel_mocker):
         get_data_for_channel_mocker.return_value = self.sample_json_entries
 
@@ -79,7 +79,7 @@ class TestFormatData(unittest.TestCase):
         assert data[2].channel_id == 123
         assert data[2].entry_id == 3
 
-    @mock.patch('format_data.get_data_for_channel')
+    @mock.patch('airqo_monitor.format_data.get_data_for_channel')
     def test_get_and_format_data_for_channel_with_field8(self, get_data_for_channel_mocker):
         sample_json_entries = self.sample_json_entries
         sample_json_entries[0]['field8'] = '6,7,8,9,10,11'
@@ -116,8 +116,8 @@ class TestFormatData(unittest.TestCase):
         assert data[2].num_satellites is None
         assert data[2].hdop is None
 
-    @mock.patch('format_data.get_and_format_data_for_channel')
-    @mock.patch('format_data.get_all_channel_ids')
+    @mock.patch('airqo_monitor.format_data.get_and_format_data_for_channel')
+    @mock.patch('airqo_monitor.format_data.get_all_channel_ids')
     def test_get_and_format_data_for_all_channels(self, get_all_channel_ids_mocker, get_and_format_data_for_channel_mocker):
         get_all_channel_ids_mocker.return_value = [123, 456]
 

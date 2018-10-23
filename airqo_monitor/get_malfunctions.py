@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from format_data import get_and_format_data_for_all_channels
-from constants import (
+from airqo_monitor.format_data import get_and_format_data_for_all_channels
+from airqo_monitor.constants import (
     LOW_BATTERY_CUTOFF,
     NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION,
     SENSOR_PM_2_5_MIN_CUTOFF,

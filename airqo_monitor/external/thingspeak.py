@@ -1,7 +1,7 @@
 import json, requests
 from datetime import datetime, timedelta
 
-from constants import (
+from airqo_monitor.constants import (
     AIR_QUALITY_MONITOR_KEYWORD,
     DEFAULT_THINGSPEAK_FEEDS_INTERVAL_DAYS,
     INACTIVE_MONITOR_KEYWORD,

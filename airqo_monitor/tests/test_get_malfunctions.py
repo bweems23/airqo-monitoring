@@ -3,15 +3,15 @@ import unittest
 
 from datetime import datetime, timedelta
 
-from constants import (
+from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
     LOW_BATTERY_CUTOFF,
     SENSOR_PM_2_5_MIN_CUTOFF,
     SENSOR_PM_2_5_MAX_CUTOFF,
 )
-from models.data_entry import DataEntry
-from get_malfunctions import (
+from airqo_monitor.objects.data_entry import DataEntry
+from airqo_monitor.get_malfunctions import (
     _get_channel_malfunctions,
     _has_low_battery,
     _has_low_reporting_frequency,
@@ -60,9 +60,9 @@ class TestGetMalfunctions(unittest.TestCase):
         ),
     ]
 
-    @mock.patch('get_malfunctions._sensor_is_reporting_outliers')
-    @mock.patch('get_malfunctions._has_low_battery')
-    @mock.patch('get_malfunctions._has_low_reporting_frequency')
+    @mock.patch('airqo_monitor.get_malfunctions._sensor_is_reporting_outliers')
+    @mock.patch('airqo_monitor.get_malfunctions._has_low_battery')
+    @mock.patch('airqo_monitor.get_malfunctions._has_low_reporting_frequency')
     def test_get_channel_malfunctions(self, _has_low_reporting_frequency_mocker, _has_low_battery_mocker,
                                       _sensor_is_reporting_outliers_mocker):
         _has_low_reporting_frequency_mocker.return_value = True
@@ -112,8 +112,8 @@ class TestGetMalfunctions(unittest.TestCase):
         assert _sensor_is_reporting_outliers(self.sample_channel_data) == True
 
 
-    @mock.patch('get_malfunctions._get_channel_malfunctions')
-    @mock.patch('get_malfunctions.get_and_format_data_for_all_channels')
+    @mock.patch('airqo_monitor.get_malfunctions._get_channel_malfunctions')
+    @mock.patch('airqo_monitor.get_malfunctions.get_and_format_data_for_all_channels')
     def test_get_all_channel_malfunctions(self, get_and_format_data_for_all_channels_mocker, _get_channel_malfunctions_mocker):
         get_and_format_data_for_all_channels_mocker.return_value =  {'123': self.sample_channel_data}
         _get_channel_malfunctions_mocker.return_value = ['reporting_outliers']
