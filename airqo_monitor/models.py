@@ -10,6 +10,7 @@ class Channel(models.Model):
     channel_id = models.IntegerField(
         null=False,
         db_index=True,
+        unique=True,
     )
     name = models.TextField(null=True)
 
