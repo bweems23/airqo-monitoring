@@ -1,13 +1,26 @@
 from django.db import models
 
 
+class Channel(models.Model):
+
+    class Meta:
+        db_table = 'channel'
+
+    created_at = models.DateTimeField("date created", auto_now_add=True)
+    channel_id = models.IntegerField(
+        null=False,
+        db_index=True,
+    )
+    name = models.TextField(null=True)
+
+
 class Incident(models.Model):
 
     class Meta:
         db_table = 'incident'
 
     created_at = models.DateTimeField("date created", auto_now_add=True)
-    channel_id = models.IntegerField(null=False, db_index=True)
+    channel = models.ForeignKey(Channel, null=False, db_index=True)
 
     def get_malfunction_reason_ids(self):
         return IncidentMalfunctionReasonLink.objects.filter(
@@ -69,6 +82,11 @@ class ChannelNote(models.Model):
         db_table = 'channel_note'
 
     created_at = models.DateTimeField("date created", auto_now_add=True)
-    channel_id = models.IntegerField(null=False)
+    channel = models.ForeignKey(
+        Channel,
+        null=False,
+        db_index=True,
+        on_delete=models.DO_NOTHING,
+    )
     note = models.TextField(null=False)
     author = models.TextField(null=False)  ## who is leaving this note?

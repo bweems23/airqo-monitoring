@@ -54,16 +54,19 @@ class TestIncidentMalfunctionReasonLink(TestCase):
 
 class TestChannelNote(TestCase):
     def setUp(self):
-        pass
+        self.channel = Channel.objects.create(
+            channel_id=111,
+            name='Channel',
+        )
 
     def test_create_channel_note(self):
         note = ChannelNote.objects.create(
-            channel_id=1,
+            channel=self.channel,
             note='did some maintenance',
             author='Rachel',
         )
 
-        assert note.channel_id == 1
+        assert note.channel == self.channel
         assert note.note == 'did some maintenance'
         assert note.author == 'Rachel'
         assert note.created_at is not None
