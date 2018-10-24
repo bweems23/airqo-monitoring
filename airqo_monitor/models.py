@@ -21,6 +21,7 @@ class Incident(models.Model):
         db_table = 'incident'
 
     created_at = models.DateTimeField("date created", auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True)
     channel = models.ForeignKey(
         Channel,
         null=False,
