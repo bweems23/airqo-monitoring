@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from werkzeug.contrib.cache import SimpleCache
 
+from airqo_monitor.models import Incident
+
 from airqo_monitor.format_data import get_and_format_data_for_all_channels
 from airqo_monitor.constants import (
     LOW_BATTERY_CUTOFF,
@@ -73,12 +75,19 @@ def _sensor_is_reporting_outliers(channel_data):
     return len(extreme_reads) > num_points * ALLOWABLE_OUTLIER_SENSOR_RATIO
 
 
+def add_malfunctions_to_db(channels):
+    for channel in channels:
+        if channel["possible_malfunction_reasons"] and \
+            Incident.objects.filter(channel_id=channel["channel_id"]).count() == 0:
+            Incident.objects.create(channel_id=channel["channel_id"])
+
+
 def get_all_channel_malfunctions():
     """Generate a list of malfunctions for all channels.
 
     Returns: A dict keyed by the channel id. The value is a list of potential concerns about a sensor.
     """
-    malfunctions = []
+    channels = []
     start_time = datetime.utcnow() - timedelta(days=1)
     all_channels_info = get_and_format_data_for_all_channels(start_time=start_time)
     for channel_id, channel_info in all_channels_info.items():
@@ -91,8 +100,8 @@ def get_all_channel_malfunctions():
             }
         )
 
-
-    return malfunctions
+    add_malfunctions_to_db(channels)
+    return channels
 
 
 def get_all_channel_malfunctions_cached():

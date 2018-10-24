@@ -1,6 +1,8 @@
 from django.shortcuts import redirect, render
 from django.http import Http404, HttpResponse
 
+from airqo_monitor.models import Incident
+
 from airqo_monitor.get_malfunctions import get_all_channel_malfunctions_cached
 from airqo_monitor.models import (
     Channel,
@@ -26,6 +28,12 @@ def index(request):
         "index.html",
         context={"malfunctioning_channels": malfunctioning_channels},
     )
+
+
+def incidents(request):
+	incidents = Incident.objects.all()
+	print(incidents.count)
+	return render(request, "incidents.html", context={"incidents": incidents})
 
 
 def db(request):
