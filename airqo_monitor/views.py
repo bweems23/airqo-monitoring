@@ -1,9 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .models import Greeting
-
-
 from airqo_monitor.external.thingspeak import get_all_channel_ids
 from airqo_monitor.get_malfunctions import get_all_channel_malfunctions_cached
 

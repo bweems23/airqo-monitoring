@@ -61,3 +61,14 @@ class IncidentMalfunctionReasonLink(models.Model):
         db_index=True,
         on_delete=models.DO_NOTHING,
     )
+
+
+class ChannelNote(models.Model):
+
+    class Meta:
+        db_table = 'channel_note'
+
+    created_at = models.DateTimeField("date created", auto_now_add=True)
+    channel_id = models.IntegerField(null=False)
+    note = models.TextField(null=False)
+    author = models.TextField(null=False)  ## who is leaving this note?

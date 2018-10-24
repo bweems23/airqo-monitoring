@@ -2,6 +2,7 @@ from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
 
 from airqo_monitor.models import (
+    ChannelNote,
     Incident,
     IncidentMalfunctionReasonLink,
     MalfunctionReason,
@@ -49,3 +50,20 @@ class TestIncidentMalfunctionReasonLink(TestCase):
         assert self.reason.incidents[0] == self.incident
         assert len(self.incident.malfunction_reasons) == 1
         assert self.incident.malfunction_reasons[0] == self.reason
+
+
+class TestChannelNote(TestCase):
+    def setUp(self):
+        pass
+
+    def test_create_channel_note(self):
+        note = ChannelNote.objects.create(
+            channel_id=1,
+            note='did some maintenance',
+            author='Rachel',
+        )
+
+        assert note.channel_id == 1
+        assert note.note == 'did some maintenance'
+        assert note.author == 'Rachel'
+        assert note.created_at is not None
