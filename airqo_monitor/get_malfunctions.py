@@ -97,5 +97,5 @@ def get_all_channel_malfunctions_cached():
     cached_value = cache.get('channel-malfunctions')
     if cached_value is None:
         cached_value = get_all_channel_malfunctions()
-        cache.set('channel-malfunctions', cached_value, timeout=10 * 60)
+        cache.set('channel-malfunctions', cached_value, timeout=5 * 60)
     return cached_value
