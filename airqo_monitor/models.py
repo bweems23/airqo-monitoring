@@ -1,8 +1,18 @@
 from django.db import models
 
 
-class Greeting(models.Model):
-    when = models.DateTimeField("date created", auto_now_add=True)
+class Channel(models.Model):
+
+    class Meta:
+        db_table = 'channel'
+
+    created_at = models.DateTimeField("date created", auto_now_add=True)
+    channel_id = models.IntegerField(
+        null=False,
+        db_index=True,
+        unique=True,
+    )
+    name = models.TextField(null=True)
 
 
 class Incident(models.Model):
@@ -11,7 +21,12 @@ class Incident(models.Model):
         db_table = 'incident'
 
     created_at = models.DateTimeField("date created", auto_now_add=True)
-    channel_id = models.IntegerField(null=False, db_index=True)
+    channel = models.ForeignKey(
+        Channel,
+        null=False,
+        db_index=True,
+        on_delete=models.DO_NOTHING,
+    )
 
     def get_malfunction_reason_ids(self):
         return IncidentMalfunctionReasonLink.objects.filter(
@@ -65,3 +80,19 @@ class IncidentMalfunctionReasonLink(models.Model):
         db_index=True,
         on_delete=models.DO_NOTHING,
     )
+
+
+class ChannelNote(models.Model):
+
+    class Meta:
+        db_table = 'channel_note'
+
+    created_at = models.DateTimeField("date created", auto_now_add=True)
+    channel = models.ForeignKey(
+        Channel,
+        null=False,
+        db_index=True,
+        on_delete=models.DO_NOTHING,
+    )
+    note = models.TextField(null=False)
+    author = models.TextField(null=False)  ## who is leaving this note?
