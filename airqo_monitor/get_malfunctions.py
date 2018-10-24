@@ -75,11 +75,22 @@ def _sensor_is_reporting_outliers(channel_data):
     return len(extreme_reads) > num_points * ALLOWABLE_OUTLIER_SENSOR_RATIO
 
 
-def add_malfunctions_to_db(channels):
+def open_incident_exists(channel_id, reason):
+    pass
+
+
+def add_incidents_to_db(channels):
     for channel in channels:
-        if channel["possible_malfunction_reasons"] and \
-            Incident.objects.filter(channel_id=channel["channel_id"]).count() == 0:
-            Incident.objects.create(channel_id=channel["channel_id"])
+        if channel["possible_malfunction_reasons"]:
+            # Create one incident per reason.
+            for reason in channel["possible_malfunction_reasons"]:
+                # Create the incident
+                channel_object = Channel.objects.get(channel_id=channel["channel_id"])
+                incident = Incident.objects.create(channel=channel_object)
+
+                # Connect the incident to the reason.
+                reason = MalfunctionReason.objects.get(name=reason)
+                IncidentMalfunctionReasonLink.objects.create(incident=incident, malfunction_reason=reason)
 
 
 def get_all_channel_malfunctions():
@@ -100,7 +111,7 @@ def get_all_channel_malfunctions():
             }
         )
 
-    add_malfunctions_to_db(channels)
+    add_incidents_to_db(channels)
     return channels
 
 

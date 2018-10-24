@@ -32,7 +32,6 @@ def index(request):
 
 def incidents(request):
 	incidents = Incident.objects.all()
-	print(incidents.count)
 	return render(request, "incidents.html", context={"incidents": incidents})
 
 
