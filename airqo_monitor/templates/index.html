@@ -17,6 +17,15 @@
         height: 100%;
     }
 
+    .low_reporting_frequency_block {
+        background-color: #ffface;
+        margin-left: 5px;
+        position: relative;
+        margin-bottom: 5px;
+        float: left;
+        height: 100%;
+    }
+
     .functioning_block {
         background-color: #d3ffce;
         margin-left: 5px;
@@ -43,7 +52,7 @@
 
     <div class="wrapper">
             {% for channel in malfunctioning_channels %}
-                <div class="{% if channel.possible_malfunction_reasons %} malfunctioning_block {% else %} functioning_block {% endif %};">
+                <div class="{% if channel.has_low_reporting_frequency %} low_reporting_frequency_block {% elif channel.possible_malfunction_reasons %} malfunctioning_block {% else %} functioning_block {% endif %};">
                     <p style="text-align:center">
                         <a href="/channels/{{ channel.channel_id }}"><strong>{{ channel.name }}</strong></a>
                     </p>
