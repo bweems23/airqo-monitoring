@@ -46,4 +46,12 @@ For more information about using Python on Heroku, see these Dev Center articles
 
 ## Running Tests
 
-./manage.py test airqo_monitor/tests
+```sh
+$ ./manage.py test airqo_monitor/tests
+```
+
+## To enter production python shell
+
+```sh
+$ heroku run python manage.py shell
+```
