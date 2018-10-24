@@ -47,7 +47,7 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
             break
 
         feeds = result['feeds']
-        all_data.extend(feeds)
+        all_data = feeds + all_data
 
         # If we aren't hitting the max number of results then we
         # have all of them for the time range and can stop iterating
