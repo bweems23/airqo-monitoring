@@ -1,4 +1,4 @@
-This Repo used Heroku's getting started guide for as a starting point for a simple Django App: https://devcenter.heroku.com/articles/getting-started-with-python
+This Repo used Heroku's getting started guide as a starting point for a simple Django App: https://devcenter.heroku.com/articles/getting-started-with-python
 
 ## Running Locally
 
