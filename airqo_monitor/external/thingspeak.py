@@ -64,12 +64,11 @@ def get_all_channel_ids():
     """
     Get all relevant channels to this tool (channels with AIRQO and without INACTIVE in the name)
     """
-    response = make_get_call(THINGSPEAK_CHANNELS_LIST_URL)
-
-    channels = response['channels']
+    api_key = os.environ.get('THINGSPEAK_USER_API_KEY')
+    full_url = '{}/?api_key={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key)
+    channels = make_get_call(full_url)
 
     channel_ids = []
-
     for channel in channels:
         name = channel['name']
         if AIR_QUALITY_MONITOR_KEYWORD in name and INACTIVE_MONITOR_KEYWORD not in name:
