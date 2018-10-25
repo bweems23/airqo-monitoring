@@ -1,10 +1,10 @@
 class DataEntry(object):
 
-    def __init__(self, channel_id, entry_id, created_at=None, pm_1=None, pm_2_5=None, pm_10=None, sample_period=None,
-                 latitude=None, longitude=None, battery_voltage=None, elevation=None):
-        self.created_at = created_at
+    def __init__(self, channel_id, entry_id, created_at=None, name=None, pm_1=None, pm_2_5=None, pm_10=None,
+                 sample_period=None, latitude=None, longitude=None, battery_voltage=None, elevation=None):
         self.channel_id = channel_id
         self.entry_id = entry_id
+        self.created_at = created_at
         self.pm_1 = pm_1
         self.pm_2_5 = pm_2_5
         self.pm_10 = pm_10

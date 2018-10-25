@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import Http404, HttpResponse
 
-from airqo_monitor.external.thingspeak import get_all_channel_ids
 from airqo_monitor.get_malfunctions import get_all_channel_malfunctions_cached
 from airqo_monitor.models import Channel, Incident
 from airqo_monitor.serializers import ChannelSerializer, IncidentSerializer

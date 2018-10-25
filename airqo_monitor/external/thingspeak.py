@@ -1,6 +1,7 @@
 import json, requests
 import os
 
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 from airqo_monitor.constants import (
@@ -60,7 +61,7 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
     return all_data
 
 
-def get_all_channel_ids():
+def get_channel_ids_to_names():
     """
     Get all relevant channels to this tool (channels with AIRQO and without INACTIVE in the name)
     """
@@ -68,13 +69,13 @@ def get_all_channel_ids():
     full_url = '{}/?api_key={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key)
     channels = make_get_call(full_url)
 
-    channel_ids = []
+    channel_ids_to_names = defaultdict(dict)
     for channel in channels:
         name = channel['name']
         if AIR_QUALITY_MONITOR_KEYWORD in name and INACTIVE_MONITOR_KEYWORD not in name:
-            channel_ids.append(channel['id'])
+            channel_ids_to_names[channel['id']]["name"] = name
 
-    return channel_ids
+    return channel_ids_to_names
 
 
 def make_post_call(url):

@@ -1,7 +1,8 @@
 from airqo_monitor.external.thingspeak import (
-    get_all_channel_ids,
+    get_channel_ids_to_names,
     get_data_for_channel,
 )
+from airqo_monitor.models import Channel
 from airqo_monitor.objects.data_entry import DataEntry
 
 
@@ -59,12 +60,20 @@ def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
     return entry_objects
 
 
-def get_and_format_data_for_all_channels(start_time=None, end_time=None):
-    channel_ids = get_all_channel_ids()
+def _update_db_channel_table(channel_ids_to_names):
+    for channel_id, channel_info in channel_ids_to_names.items():
+        channel, _ = Channel.objects.get_or_create(channel_id=channel_id)
+        channel_name = channel_info["name"]
+        if channel.name != channel_name:
+            channel.name = channel_name
+            channel.save()
 
-    all_channels_dict = dict()
-    for channel_id in channel_ids:
+
+def get_and_format_data_for_all_channels(start_time=None, end_time=None):
+    all_channels_dict = get_channel_ids_to_names()
+
+    for channel_id in all_channels_dict.keys():
         data = get_and_format_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
-        all_channels_dict[channel_id] = data
+        all_channels_dict[channel_id]["data"] = data
 
     return all_channels_dict

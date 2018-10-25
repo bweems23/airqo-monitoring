@@ -3,18 +3,20 @@ import unittest
 
 from datetime import datetime, timedelta
 
+from airqo_monitor.models import Channel
 from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
 )
 from airqo_monitor.objects.data_entry import DataEntry
 from airqo_monitor.external.thingspeak import (
-    get_all_channel_ids,
+    get_channel_ids_to_names,
     get_data_for_channel,
 )
 from airqo_monitor.format_data import (
     get_and_format_data_for_all_channels,
     get_and_format_data_for_channel,
+    _update_db_channel_table,
 )
 
 
@@ -117,9 +119,9 @@ class TestFormatData(unittest.TestCase):
         assert data[2].hdop is None
 
     @mock.patch('airqo_monitor.format_data.get_and_format_data_for_channel')
-    @mock.patch('airqo_monitor.format_data.get_all_channel_ids')
-    def test_get_and_format_data_for_all_channels(self, get_all_channel_ids_mocker, get_and_format_data_for_channel_mocker):
-        get_all_channel_ids_mocker.return_value = [123, 456]
+    @mock.patch('airqo_monitor.format_data.get_channel_ids_to_names')
+    def test_get_and_format_data_for_all_channels(self, get_channel_ids_to_names_mocker, get_and_format_data_for_channel_mocker):
+        get_channel_ids_to_names_mocker.return_value = {123: {"name": "channel1"}, 456: {"name": "channel2"}}
 
         entry = DataEntry(channel_id=123, entry_id=1)
         entry.latitude = '1'
@@ -127,15 +129,29 @@ class TestFormatData(unittest.TestCase):
 
         get_and_format_data_for_channel_mocker.return_value = [entry]
 
-        data = get_and_format_data_for_all_channels()
-        assert len(data) == 2
 
-        assert len(data[123]) == 1
-        assert data[123][0].entry_id == 1
-        assert data[123][0].latitude == '1'
-        assert data[123][0].longitude == '1'
+        channel_info = get_and_format_data_for_all_channels()
+        assert len(channel_info) == 2
 
-        assert len(data[456]) == 1
-        assert data[456][0].entry_id == 1
-        assert data[456][0].latitude == '1'
-        assert data[456][0].longitude == '1'
+        assert channel_info[123]["name"] == "channel1"
+        assert len(channel_info[123]["data"]) == 1
+        assert channel_info[123]["data"][0].entry_id == 1
+        assert channel_info[123]["data"][0].latitude == '1'
+        assert channel_info[123]["data"][0].longitude == '1'
+
+        assert channel_info[456]["name"] == "channel2"
+        assert len(channel_info[456]["data"]) == 1
+        assert channel_info[456]["data"][0].entry_id == 1
+        assert channel_info[456]["data"][0].latitude == '1'
+        assert channel_info[456]["data"][0].longitude == '1'
+
+    def test_update_db_channel_table(self):
+        channel_ids_to_names = {1: {"name": "channel1"}}
+        _update_db_channel_table(channel_ids_to_names)
+        assert len(Channel.objects.all()) == 1
+        assert Channel.objects.first().name == "channel1"
+
+        channel_ids_to_names_update = {1: {"name": "NEWchannel1"}}
+        _update_db_channel_table(channel_ids_to_names_update)
+        assert Channel.objects.first().name == "NEWchannel1"
+
