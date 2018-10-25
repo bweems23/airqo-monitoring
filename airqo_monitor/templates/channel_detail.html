@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+    </style>
+
+    <meta charset="utf-8">
+    <title>Channel {{ channel.channel_id }}</title>
+  </head>
+  <body>
+    <h1> Channel {{ channel.channel_id }} Details </h1>
+
+    <strong>Channel {{ channel.channel_id }}: {{ channel.name }}</strong>
+
+    <br/><br/>
+
+    <div class="wrapper">
+        History
+        {% for incident in incidents %}
+        <br/><br/>
+        <strong>Time:</strong> {{ incident.created_at }}<br/>
+        <strong>Reasons</strong> {{ incident.malfunction_reasons }}
+        {% endfor %}
+    </div>
+
+  </body>
+</html>

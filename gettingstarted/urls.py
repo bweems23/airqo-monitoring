@@ -18,4 +18,5 @@ urlpatterns = [
     path("", airqo_monitor.views.index, name="index"),
     path("db/", airqo_monitor.views.db, name="db"),
     path("admin/", admin.site.urls),
+    path("channels/<int:channel_id>/", airqo_monitor.views.channel_detail, name="channel_detail")
 ]
