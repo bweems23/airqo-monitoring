@@ -12,7 +12,7 @@
         background-color: #ffced3;
         margin-left: 5px;
         position: relative;
-        margin-bottom: 5px;
+        margin-bottom: 50px;
         float: left;
         height: 100%;
     }
@@ -21,9 +21,14 @@
         background-color: #d3ffce;
         margin-left: 5px;
         position: relative;
-        margin-bottom: 5px;
+        margin-bottom: 50px;
         float: left;
         height: 100%;
+    }
+
+    .history_link {
+        position: absolute;
+        bottom: 0px;
     }
 
     li {
@@ -59,6 +64,9 @@
                     {% else %}
                         <p style="text-align:center">Reports look normal.</p>
                     {% endif %}
+                    <p class=history_link>
+                        <a href="/channels/{{ channel.channel_id }}">channel history</a>
+                    </p>
                 </div>
                 </div>
             {% endfor %}
