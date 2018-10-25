@@ -22,12 +22,12 @@ class Incident(models.Model):
 
     created_at = models.DateTimeField("date created", auto_now_add=True)
     resolved_at = models.DateTimeField(null=True)
-    # channel = models.ForeignKey(
-    #     Channel,
-    #     null=False,
-    #     db_index=True,
-    #     on_delete=models.DO_NOTHING,
-    # )
+    channel = models.ForeignKey(
+        Channel,
+        null=False,
+        db_index=True,
+        on_delete=models.DO_NOTHING,
+    )
 
     def get_malfunction_reason_ids(self):
         return IncidentMalfunctionReasonLink.objects.filter(
