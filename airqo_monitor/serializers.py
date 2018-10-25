@@ -14,6 +14,7 @@ class ChannelSerializer(serializers.ModelSerializer):
             'name',
         )
 
+
 class MalfunctionReasonSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=100)
     description = serializers.CharField(max_length=500)
