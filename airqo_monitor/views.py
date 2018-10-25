@@ -23,13 +23,10 @@ def db(request):
 
 def channel_detail(request, channel_id):
     try:
-        # Channel.objects.filter(channel_id=channel_id).delete()
-        # Channel.objects.create(channel_id=channel_id, name='Test Name')
         channel = Channel.objects.get(channel_id=channel_id)
     except Channel.DoesNotExist:
         raise Http404("Cannot find channel. Please make sure the api_key has been stored if it is a private channel.")
 
-    Incident.objects.create(channel=channel)
     incidents = Incident.objects.filter(channel=channel)
     serialized_incidents = IncidentSerializer(incidents, many=True)
 
