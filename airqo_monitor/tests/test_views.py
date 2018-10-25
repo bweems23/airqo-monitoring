@@ -2,15 +2,11 @@ import collections
 import mock
 
 from datetime import datetime
-from django.contrib.auth.models import AnonymousUser, User
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 
 from airqo_monitor.models import (
     Channel,
-    ChannelNote,
     Incident,
-    IncidentMalfunctionReasonLink,
-    MalfunctionReason,
 )
 from airqo_monitor.views import channel_detail
 
@@ -34,9 +30,12 @@ class TestChannelDetailView(TestCase):
                     "channel_id": channel.id,
                     "name": channel.name,
                 },
-                "incidents": [
+                "history": [
                     collections.OrderedDict(
+                        object_type='incident',
                         created_at=datetime.strftime(incident.created_at,'%Y-%m-%dT%H:%M:%S.%fZ'),
+                        note=None,
+                        author=None,
                         resolved_at=None,
                         malfunction_reasons=[],
                     )

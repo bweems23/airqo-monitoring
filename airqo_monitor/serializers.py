@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
-from airqo_monitor.models import Channel, Incident, MalfunctionReason
+from airqo_monitor.models import (
+    Channel,
+    ChannelNote,
+    Incident,
+    MalfunctionReason,
+)
 
 
 class ChannelSerializer(serializers.ModelSerializer):
@@ -39,3 +44,61 @@ class IncidentSerializer(serializers.ModelSerializer):
             'resolved_at',
             'malfunction_reasons',
         )
+
+
+class ChannelNoteSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField()
+    note = serializers.CharField(max_length=500)
+    author = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = ChannelNote
+        fields = (
+            'created_at',
+            'note',
+            'author',
+        )
+
+
+class ChannelHistorySerializer(serializers.Serializer):
+    object_type = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField()
+    note = serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+    resolved_at = serializers.SerializerMethodField()
+    malfunction_reasons = serializers.SerializerMethodField()
+
+    def get_object_type(self, obj):
+        if isinstance(obj, ChannelNote):
+            return 'channel_note'
+        if isinstance(obj, Incident):
+            return 'incident'
+
+    def get_note(self, obj):
+        object_type = self.get_object_type(obj)
+        if object_type == 'channel_note':
+            return obj.note
+        if object_type == 'incident':
+            return None
+
+    def get_author(self, obj):
+        object_type = self.get_object_type(obj)
+        if object_type == 'channel_note':
+            return obj.author
+        if object_type == 'incident':
+            return None
+
+    def get_resolved_at(self, obj):
+        object_type = self.get_object_type(obj)
+        if object_type == 'channel_note':
+            return None
+        if object_type == 'incident':
+            return obj.resolved_at
+
+    def get_malfunction_reasons(self, obj):
+        object_type = self.get_object_type(obj)
+        if object_type == 'channel_note':
+            return None
+        if object_type == 'incident':
+            reasons = obj.malfunction_reasons
+            return MalfunctionReasonSerializer(reasons, many=True).data
