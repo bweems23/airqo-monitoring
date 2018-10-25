@@ -45,7 +45,7 @@
             {% for channel in malfunctioning_channels %}
                 <div class="{% if channel.possible_malfunction_reasons %} malfunctioning_block {% else %} functioning_block {% endif %};">
                     <p style="text-align:center">
-                        <a href="https://thingspeak.com/channels/{{channel.channel_id}}/private_show"><strong> Channel ID: {{ channel.name }} </strong></a>
+                        <a href="https://thingspeak.com/channels/{{channel.channel_id}}/private_show"><strong>{{ channel.name }}</strong></a>
                     </p>
                     <div style="margin-left:5px;">
                         {% if channel.possible_malfunction_reasons %}

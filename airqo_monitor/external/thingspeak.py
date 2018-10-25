@@ -1,6 +1,7 @@
 import json, requests
 import os
 
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 from airqo_monitor.constants import (
