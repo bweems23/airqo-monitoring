@@ -42,13 +42,19 @@ def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
 
         field8 = entry.get('field8', None)
         if field8:
-            lat, lng, altitude, speed, num_satellites, hdop = parse_field8_metadata(field8)
-            entry_object.latitude = lat
-            entry_object.longitude = lng
-            entry_object.altitude = altitude
-            entry_object.speed = speed
-            entry_object.num_satellites = num_satellites
-            entry_object.hdop = hdop
+            try:
+                lat, lng, altitude, speed, num_satellites, hdop = parse_field8_metadata(field8)
+                entry_object.latitude = lat
+                entry_object.longitude = lng
+                entry_object.altitude = altitude
+                entry_object.speed = speed
+                entry_object.num_satellites = num_satellites
+                entry_object.hdop = hdop
+            except ValueError:
+                # there must have been a misformatted field, fallback to the old
+                # lat and lng fields
+                entry_object.latitude = entry['field5']
+                entry_object.longitude = entry['field6']
         else:
             entry_object.latitude = entry['field5']
             entry_object.longitude = entry['field6']

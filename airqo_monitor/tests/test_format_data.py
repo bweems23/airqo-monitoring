@@ -118,6 +118,18 @@ class TestFormatData(unittest.TestCase):
         assert data[2].num_satellites is None
         assert data[2].hdop is None
 
+    @mock.patch('airqo_monitor.format_data.get_data_for_channel')
+    def test_get_and_format_data_for_channel_with_misformatted_field8_doesnt_crash(self, get_data_for_channel_mocker):
+        sample_json_entries = self.sample_json_entries
+        sample_json_entries[0]['field8'] = '6,7,8,9,10'
+
+        get_data_for_channel_mocker.return_value = sample_json_entries
+
+        data = get_and_format_data_for_channel(123)
+
+        assert data[0].latitude == '172'
+        assert data[0].longitude == '1'
+
     @mock.patch('airqo_monitor.format_data.get_and_format_data_for_channel')
     @mock.patch('airqo_monitor.format_data.get_channel_ids_to_names')
     def test_get_and_format_data_for_all_channels(self, get_channel_ids_to_names_mocker, get_and_format_data_for_channel_mocker):
