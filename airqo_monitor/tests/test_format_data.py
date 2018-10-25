@@ -119,7 +119,7 @@ class TestFormatData(unittest.TestCase):
     @mock.patch('airqo_monitor.format_data.get_and_format_data_for_channel')
     @mock.patch('airqo_monitor.format_data.get_all_channel_ids')
     def test_get_and_format_data_for_all_channels(self, get_all_channel_ids_mocker, get_and_format_data_for_channel_mocker):
-        get_all_channel_ids_mocker.return_value = [123, 456]
+        get_all_channel_ids_mocker.return_value = {123: "channel1", 456: "channel2"}
 
         entry = DataEntry(channel_id=123, entry_id=1)
         entry.latitude = '1'
@@ -127,15 +127,18 @@ class TestFormatData(unittest.TestCase):
 
         get_and_format_data_for_channel_mocker.return_value = [entry]
 
-        data = get_and_format_data_for_all_channels()
-        assert len(data) == 2
 
-        assert len(data[123]) == 1
-        assert data[123][0].entry_id == 1
-        assert data[123][0].latitude == '1'
-        assert data[123][0].longitude == '1'
+        channel_info = get_and_format_data_for_all_channels()
+        assert len(channel_info) == 2
 
-        assert len(data[456]) == 1
-        assert data[456][0].entry_id == 1
-        assert data[456][0].latitude == '1'
-        assert data[456][0].longitude == '1'
+        assert channel_info[123]["name"] == "channel1"
+        assert len(channel_info[123]["data"]) == 1
+        assert channel_info[123]["data"][0].entry_id == 1
+        assert channel_info[123]["data"][0].latitude == '1'
+        assert channel_info[123]["data"][0].longitude == '1'
+
+        assert channel_info[456]["name"] == "channel2"
+        assert len(channel_info[456]["data"]) == 1
+        assert channel_info[456]["data"][0].entry_id == 1
+        assert channel_info[456]["data"][0].latitude == '1'
+        assert channel_info[456]["data"][0].longitude == '1'
