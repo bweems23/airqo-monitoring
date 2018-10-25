@@ -68,7 +68,7 @@ def _update_db_channel_table(channel_ids_to_names):
 def get_and_format_data_for_all_channels(start_time=None, end_time=None):
     all_channels_dict = get_channel_ids_to_names()
 
-    for channel_id in channel_ids.keys():
+    for channel_id in all_channels_dict.keys():
         data = get_and_format_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
         all_channels_dict[channel_id]["data"] = data
 

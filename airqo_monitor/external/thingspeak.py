@@ -68,11 +68,11 @@ def get_channel_ids_to_names():
     full_url = '{}/?api_key={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key)
     channels = make_get_call(full_url)
 
-    channel_ids_to_names = {}
+    channel_ids_to_names = defaultdict(dict)
     for channel in channels:
         name = channel['name']
         if AIR_QUALITY_MONITOR_KEYWORD in name and INACTIVE_MONITOR_KEYWORD not in name:
-            channel_ids_to_names[channel['id']] = name
+            channel_ids_to_names[channel['id']]["name"] = name
 
     return channel_ids_to_names
 

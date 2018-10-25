@@ -80,12 +80,12 @@ def get_all_channel_malfunctions():
     """
     malfunctions = []
     start_time = datetime.utcnow() - timedelta(days=1)
-    channel_info = get_and_format_data_for_all_channels(start_time=start_time)
-    possible_malfunctions = _get_channel_malfunctions(channel_info["data"])
-    for channel_id, channel_data in data.items():
+    all_channels_info = get_and_format_data_for_all_channels(start_time=start_time)
+    for channel_id, channel_info in all_channels_info.items():
+        possible_malfunctions = _get_channel_malfunctions(channel_info["data"])
         malfunctions.append(
             {
-                "name": channel_info["name"]
+                "name": channel_info["name"],
                 "channel_id": channel_id,
                 "possible_malfunction_reasons": possible_malfunctions,
             }

@@ -9,7 +9,7 @@ from airqo_monitor.constants import (
 )
 from airqo_monitor.objects.data_entry import DataEntry
 from airqo_monitor.external.thingspeak import (
-    get_all_channel_ids,
+    get_channel_ids_to_names,
     get_data_for_channel,
 )
 from airqo_monitor.format_data import (
@@ -117,9 +117,9 @@ class TestFormatData(unittest.TestCase):
         assert data[2].hdop is None
 
     @mock.patch('airqo_monitor.format_data.get_and_format_data_for_channel')
-    @mock.patch('airqo_monitor.format_data.get_all_channel_ids')
-    def test_get_and_format_data_for_all_channels(self, get_all_channel_ids_mocker, get_and_format_data_for_channel_mocker):
-        get_all_channel_ids_mocker.return_value = {123: "channel1", 456: "channel2"}
+    @mock.patch('airqo_monitor.format_data.get_channel_ids_to_names')
+    def test_get_and_format_data_for_all_channels(self, get_channel_ids_to_names_mocker, get_and_format_data_for_channel_mocker):
+        get_channel_ids_to_names_mocker.return_value = {123: {"name": "channel1"}, 456: {"name": "channel2"}}
 
         entry = DataEntry(channel_id=123, entry_id=1)
         entry.latitude = '1'

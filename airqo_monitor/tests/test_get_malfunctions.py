@@ -115,12 +115,19 @@ class TestGetMalfunctions(unittest.TestCase):
     @mock.patch('airqo_monitor.get_malfunctions._get_channel_malfunctions')
     @mock.patch('airqo_monitor.get_malfunctions.get_and_format_data_for_all_channels')
     def test_get_all_channel_malfunctions(self, get_and_format_data_for_all_channels_mocker, _get_channel_malfunctions_mocker):
-        get_and_format_data_for_all_channels_mocker.return_value =  {'123': self.sample_channel_data}
+        get_and_format_data_for_all_channels_mocker.return_value =  {
+            '123':
+            {
+                "data": self.sample_channel_data,
+                "name": "channel123"
+            }
+        }
         _get_channel_malfunctions_mocker.return_value = ['reporting_outliers']
 
         assert get_all_channel_malfunctions() == [
             {
                 "channel_id": '123',
+                "name": "channel123",
                 "possible_malfunction_reasons": ['reporting_outliers'],
             }
         ]
