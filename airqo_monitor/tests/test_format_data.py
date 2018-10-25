@@ -3,6 +3,7 @@ import unittest
 
 from datetime import datetime, timedelta
 
+from airqo_monitor.models import Channel
 from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
@@ -15,6 +16,7 @@ from airqo_monitor.external.thingspeak import (
 from airqo_monitor.format_data import (
     get_and_format_data_for_all_channels,
     get_and_format_data_for_channel,
+    _update_db_channel_table,
 )
 
 
@@ -142,3 +144,14 @@ class TestFormatData(unittest.TestCase):
         assert channel_info[456]["data"][0].entry_id == 1
         assert channel_info[456]["data"][0].latitude == '1'
         assert channel_info[456]["data"][0].longitude == '1'
+
+    def test_update_db_channel_table(self):
+        channel_ids_to_names = {1: {"name": "channel1"}}
+        _update_db_channel_table(channel_ids_to_names)
+        assert len(Channel.objects.all()) == 1
+        assert Channel.objects.first().name == "channel1"
+
+        channel_ids_to_names_update = {1: {"name": "NEWchannel1"}}
+        _update_db_channel_table(channel_ids_to_names_update)
+        assert Channel.objects.first().name == "NEWchannel1"
+

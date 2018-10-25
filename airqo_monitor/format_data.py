@@ -61,8 +61,12 @@ def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
 
 
 def _update_db_channel_table(channel_ids_to_names):
-    for channel_id, name in channel_ids_to_names.items():
-        Channel.objects.get_or_create(channel_id=channel_id, name=name)
+    for channel_id, channel_info in channel_ids_to_names.items():
+        channel, _ = Channel.objects.get_or_create(channel_id=channel_id)
+        channel_name = channel_info["name"]
+        if channel.name != channel_name:
+            channel.name = channel_name
+            channel.save()
 
 
 def get_and_format_data_for_all_channels(start_time=None, end_time=None):
