@@ -82,4 +82,5 @@ def get_and_format_data_for_all_channels(start_time=None, end_time=None):
         data = get_and_format_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
         all_channels_dict[channel_id]["data"] = data
 
+    _update_db_channel_table(all_channels_dict)
     return all_channels_dict

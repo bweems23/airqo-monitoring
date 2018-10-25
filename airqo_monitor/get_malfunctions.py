@@ -79,30 +79,31 @@ def _sensor_is_reporting_outliers(channel_data):
 
 def update_db(channels):
     for channel in channels:
-        if not Channel.objects.filter(channel_id=channel["channel_id"]):
-            Channel.objects.create(channel_id=channel["channel_id"])
-        channel_object = Channel.objects.get(channel_id=channel["channel_id"])
+        channel_object = Channel.objects.filter(channel_id=channel["channel_id"]).first()
 
         # Check for existing incidents and resolve ones that have gone away.
-        existing_incidents = Incident.objects.filter(channel=channel_object, resolved_at__isnull=True)
-        new_incident_reasons = copy.deepcopy(channel["possible_malfunction_reasons"])
-        for incident in existing_incidents:
-            reason = IncidentMalfunctionReasonLink.objects.get(incident=incident).malfunction_reason
-            if reason.name not in channel["possible_malfunction_reasons"]:
-                # If the incident is no longer reported, we consider it resolved.
-                incident.resolved_at = datetime.now()
-            else:
-                # If the incident already exists we don't want to create a new Incident object.
-                new_incident_reasons.remove(reason.name)
+        existing_channel_incidents = Incident.objects.filter(channel=channel_object, resolved_at__isnull=True)
+        current_incident_reasons = deepcopy(channel["possible_malfunction_reasons"])
+        for incident in existing_channel_incidents:
+            incident_reason_links = IncidentMalfunctionReasonLink.objects.filter(incident=incident).first()
+            if incident_reason_links:
+                reason_name = incident_reason_links.malfunction_reason.name
+                if reason_name not in current_incident_reasons:
+                    # If the incident is no longer reported, we consider it resolved.
+                    incident.resolved_at = datetime.now()
+                else:
+                    # If the incident already exists we don't want to create a new Incident object.
+                    current_incident_reasons.remove(reason_name)
 
-        # Create new incidents.
-        if new_incident_reasons:
+        # Create new incidents and their reason links.
+        if current_incident_reasons:
             # Create one incident per reason.
-            for reason in new_incident_reasons:
+            for reason in current_incident_reasons:
                 # Create the incident and connect it to a reason.
                 incident = Incident.objects.create(channel=channel_object)
-                reason = MalfunctionReason.objects.get(name=reason)
-                IncidentMalfunctionReasonLink.objects.create(incident=incident, malfunction_reason=reason)
+                reason = MalfunctionReason.objects.filter(name=reason).first()
+                if reason:
+                    IncidentMalfunctionReasonLink.objects.create(incident=incident, malfunction_reason=reason)
 
 
 def get_all_channel_malfunctions():
@@ -115,7 +116,7 @@ def get_all_channel_malfunctions():
     all_channels_info = get_and_format_data_for_all_channels(start_time=start_time)
     for channel_id, channel_info in all_channels_info.items():
         possible_malfunctions = _get_channel_malfunctions(channel_info["data"])
-        malfunctions.append(
+        channels.append(
             {
                 "name": channel_info["name"],
                 "channel_id": channel_id,
