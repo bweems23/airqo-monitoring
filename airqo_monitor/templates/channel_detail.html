@@ -31,6 +31,10 @@
   <body>
     <h1> Channel {{ channel.channel_id }} Details: {{ channel.name }} </h1>
 
+    <a href="https://thingspeak.com/channels/{{channel.channel_id}}/private_show"><strong>View channel on Thingspeak</strong></a>
+
+    <br><br><br>
+
     <div class=note_form>
       <form action="/channel_notes/", method="post" enctype="multipart/form-data">
         {% csrf_token %}
