@@ -46,7 +46,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incident',
             name='channel',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.DO_NOTHING, to='airqo_monitor.Channel'),
-            preserve_default=False,
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='airqo_monitor.Channel', null=True),
         ),
     ]
