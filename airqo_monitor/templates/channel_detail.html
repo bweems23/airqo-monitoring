@@ -2,24 +2,76 @@
 <html>
   <head>
     <style>
+      .note_block {
+          background-color: #D1F8FF;
+          margin-left: 5px;
+          display: inline-block;
+          padding: 20px;
+      }
+
+      .incident_block {
+          background-color: #FBC9BE;
+          margin-left: 5px;
+          display: inline-block;
+          padding: 20px;
+      }
+
+      .note_form{
+          border-width: 1px;
+          border-color: black;
+          border-style: solid;
+          display: inline-block;
+          padding: 20px;
+      }
     </style>
 
     <meta charset="utf-8">
     <title>Channel {{ channel.channel_id }}</title>
   </head>
   <body>
-    <h1> Channel {{ channel.channel_id }} Details </h1>
+    <h1> Channel {{ channel.channel_id }} Details: {{ channel.name }} </h1>
 
-    <strong>Channel {{ channel.channel_id }}: {{ channel.name }}</strong>
+    <a href="https://thingspeak.com/channels/{{channel.channel_id}}/private_show"><strong>View channel on Thingspeak</strong></a>
+
+    <br><br><br>
+
+    <div class=note_form>
+      <form action="/channel_notes/", method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        Author: <input type="text" name="author" required><br><br>
+        Note:
+        <textarea rows="4" cols="50" name="note" required></textarea><br>
+        <input hidden type="text" name="channel" value={{ channel.channel_id }} required><br>
+        <input type="submit" value="Create Note">
+      </form>
+    </div>
 
     <br/><br/>
 
     <div class="wrapper">
-        History
-        {% for incident in incidents %}
-        <br/><br/>
-        <strong>Time:</strong> {{ incident.created_at }}<br/>
-        <strong>Reasons</strong> {{ incident.malfunction_reasons }}
+        <strong>Channel History</strong>
+        {% for point in history %}
+          <br/><br/>
+          {% if point.object_type == 'channel_note' %}
+            <div class=note_block>
+              <strong>NOTE</strong><br/>
+              <strong>Time:</strong> {{ point.created_at }}<br/>
+              <strong>Author:</strong> {{ point.author }}<br/>
+              <strong>Note:</strong> {{ point.note }}
+            </div>
+          {% else %}
+            <div class=incident_block>
+              <strong>INCIDENT</strong><br/>
+              <strong>Time:</strong> {{ point.created_at }}<br/>
+              <strong>Resolved at:</strong> {{ point.resolved_at }}<br/>
+              <strong>Reasons:</strong>
+              <ul>
+              {% for reason in point.malfunction_reasons%}
+                <li>{{ reason.description }}</li>
+              {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
         {% endfor %}
     </div>
 
