@@ -14,6 +14,9 @@ class Channel(models.Model):
     )
     name = models.TextField(null=True)
 
+    def __str__(self):
+        return '{}: {}'.format(self.channel_id, self.name)
+
 
 class Incident(models.Model):
 
@@ -28,6 +31,12 @@ class Incident(models.Model):
         db_index=True,
         on_delete=models.DO_NOTHING,
     )
+
+    def __str__(self):
+        return '{}: {}'.format(
+            self.channel.name,
+            'resolved' if self.resolved_at else 'not resolved',
+        )
 
     def get_malfunction_reason_ids(self):
         return IncidentMalfunctionReasonLink.objects.filter(
@@ -49,6 +58,9 @@ class MalfunctionReason(models.Model):
 
     name = models.TextField(null=False)
     description = models.TextField(null=False)
+
+    def __str__(self):
+        return self.name
 
     def get_incident_ids(self):
         return IncidentMalfunctionReasonLink.objects.filter(
@@ -82,6 +94,9 @@ class IncidentMalfunctionReasonLink(models.Model):
         on_delete=models.DO_NOTHING,
     )
 
+    def __str__(self):
+        return 'Incident ID {}: {}'.format(self.incident_id, self.malfunction_reason)
+
 
 class ChannelNote(models.Model):
 
@@ -97,3 +112,6 @@ class ChannelNote(models.Model):
     )
     note = models.TextField(null=False)
     author = models.TextField(null=False)  ## who is leaving this note?
+
+    def __str__(self):
+        return '{} -{}'.format(self.note, self.author)
