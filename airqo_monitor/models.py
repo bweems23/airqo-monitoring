@@ -21,7 +21,10 @@ class Incident(models.Model):
         db_table = 'incident'
 
     created_at = models.DateTimeField("date created", auto_now_add=True)
-    resolved_at = models.DateTimeField(null=True)
+    resolved_at = models.DateTimeField(
+        null=True,
+        db_index=True,
+    )
     channel = models.ForeignKey(
         Channel,
         null=False,
@@ -47,7 +50,10 @@ class MalfunctionReason(models.Model):
     class Meta:
         db_table = 'malfunction_reason'
 
-    name = models.TextField(null=False)
+    name = models.TextField(
+        null=False,
+        db_index=True,
+    )
     description = models.TextField(null=False)
 
     def get_incident_ids(self):
