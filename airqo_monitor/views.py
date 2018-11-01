@@ -3,7 +3,10 @@ from django.http import Http404, HttpResponse
 
 from airqo_monitor.models import Incident
 
-from airqo_monitor.get_malfunctions import get_all_channel_malfunctions_cached
+from airqo_monitor.get_malfunctions import (
+    get_all_channel_malfunctions_cached,
+    get_all_channel_malfunctions
+)
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
@@ -21,10 +24,6 @@ from airqo_monitor.utils import (
 )
 
 def index(request):
-    # TODO make this get called in a cron job
-    # for now we're just calling it every time the homepage is reloaded
-    get_all_channel_malfunctions_cached()
-
     return render(
         request,
         "index.html",
@@ -58,6 +57,7 @@ def channel_detail(request, channel_id):
         },
     )
 
+
 def channel_notes(request):
     if request.method == 'POST':
         note = request.POST.get('note')
@@ -72,3 +72,9 @@ def channel_notes(request):
 
     redirect_url = '/channels/{}/'.format(channel_id)
     return redirect(redirect_url)
+
+
+def update_incidents(request):
+    print("GETTING MALFUNCTIONS")
+    get_all_channel_malfunctions()
+    return redirect('/')
