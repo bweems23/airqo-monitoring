@@ -4,7 +4,6 @@ from django.http import Http404, HttpResponse
 from airqo_monitor.models import Incident
 
 from airqo_monitor.get_malfunctions import (
-    get_all_channel_malfunctions_cached,
     get_all_channel_malfunctions
 )
 from airqo_monitor.models import (
