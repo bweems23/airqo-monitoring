@@ -16,6 +16,13 @@
           padding: 20px;
       }
 
+      .resolved_incident_block {
+          background-color: #a9f489;
+          margin-left: 5px;
+          display: inline-block;
+          padding: 20px;
+      }
+
       .note_form{
           border-width: 1px;
           border-color: black;
@@ -62,7 +69,7 @@
               <strong>Note:</strong> {{ point.note }}
             </div>
           {% else %}
-            <div class=incident_block>
+            <div class="{% if point.resolved_at %} resolved_incident_block {% else %} incident_block {% endif %};">
               <strong>INCIDENT</strong><br/>
               <strong>Time:</strong> {{ point.created_at }}<br/>
               <strong>Resolved at:</strong> {{ point.resolved_at }}<br/>
