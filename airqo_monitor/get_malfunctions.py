@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta
 from werkzeug.contrib.cache import SimpleCache
+from copy import deepcopy
+
+from airqo_monitor.models import Incident, Channel, MalfunctionReason
 
 from airqo_monitor.format_data import get_and_format_data_for_all_channels
 from airqo_monitor.constants import (
@@ -73,17 +76,43 @@ def _sensor_is_reporting_outliers(channel_data):
     return len(extreme_reads) > num_points * ALLOWABLE_OUTLIER_SENSOR_RATIO
 
 
+
+def update_db(channels):
+    for channel in channels:
+        channel_object = Channel.objects.filter(channel_id=channel["channel_id"]).first()
+
+        # Check for existing incidents and resolve ones that have gone away.
+        existing_channel_incidents = Incident.objects.filter(channel=channel_object, resolved_at__isnull=True)
+        current_incident_reasons = deepcopy(channel["possible_malfunction_reasons"])
+        for incident in existing_channel_incidents:
+            reason_name = incident.malfunction_reason.name
+            if reason_name not in current_incident_reasons:
+                # If the incident is no longer reported, we consider it resolved.
+                incident.resolved_at = datetime.now()
+            else:
+                # If the incident already exists we don't want to create a new Incident object.
+                current_incident_reasons.remove(reason_name)
+
+        # Create new incidents and their reason links.
+        if current_incident_reasons:
+            # Create one incident per reason.
+            for malfunction_reason_name in current_incident_reasons:
+                # Create the incident and connect it to a reason.
+                malfunction_reason = MalfunctionReason.objects.filter(name=malfunction_reason_name).first()
+                incident = Incident.objects.create(channel=channel_object, malfunction_reason=malfunction_reason)
+
+
 def get_all_channel_malfunctions():
     """Generate a list of malfunctions for all channels.
 
     Returns: A dict keyed by the channel id. The value is a list of potential concerns about a sensor.
     """
-    malfunctions = []
+    channels = []
     start_time = datetime.utcnow() - timedelta(days=1)
     all_channels_info = get_and_format_data_for_all_channels(start_time=start_time)
     for channel_id, channel_info in all_channels_info.items():
         possible_malfunctions = _get_channel_malfunctions(channel_info["data"])
-        malfunctions.append(
+        channels.append(
             {
                 "name": channel_info["name"],
                 "channel_id": channel_id,
@@ -91,8 +120,8 @@ def get_all_channel_malfunctions():
             }
         )
 
-
-    return malfunctions
+    update_db(channels)
+    return channels
 
 
 def get_all_channel_malfunctions_cached():

@@ -158,6 +158,7 @@ class TestFormatData(unittest.TestCase):
         assert channel_info[456]["data"][0].longitude == '1'
 
     def test_update_db_channel_table(self):
+        Channel.objects.all().delete()
         channel_ids_to_names = {1: {"name": "channel1"}}
         _update_db_channel_table(channel_ids_to_names)
         assert len(Channel.objects.all()) == 1

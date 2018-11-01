@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>AirQo Device Incidents</title>
+  </head>
+  <body>
+    <h1 style="text-align:center"> AirQo Device Monitor </h1>
+
+        {% for incident in incidents %}
+            <div style="margin-left:5px;">
+                <p>{{ incident.created_at }}</p>
+            </div>
+        {% endfor %}
+
+  </body>
+</html>
