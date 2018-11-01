@@ -1,5 +1,3 @@
-import pytz
-
 from rest_framework import serializers
 
 from airqo_monitor.models import (
