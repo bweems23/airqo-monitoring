@@ -21,12 +21,14 @@ from airqo_monitor.utils import (
 )
 
 def index(request):
-    malfunctioning_channels = get_all_channel_malfunctions_cached()
+    # TODO make this get called in a cron job
+    # for now we're just calling it every time the homepage is reloaded
+    get_all_channel_malfunctions_cached()
 
     return render(
         request,
         "index.html",
-        context={"malfunctioning_channels": malfunctioning_channels},
+        context={"channels": ChannelSerializer(Channel.objects.all(), many=True).data},
     )
 
 
