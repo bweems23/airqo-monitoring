@@ -9,6 +9,7 @@ from airqo_monitor.models import (
     Channel,
     ChannelNote,
     Incident,
+    MalfunctionReason,
 )
 from airqo_monitor.views import (
     channel_detail,
@@ -19,11 +20,12 @@ from airqo_monitor.views import (
 class TestChannelDetailView(TestCase):
     def setUp(self):
         self.channel = Channel.objects.create(channel_id=1, name='Test Name')
+        self.malfunction_reason = MalfunctionReason.objects.create(name="Test Reason", description="test")
 
     @mock.patch('airqo_monitor.views.render')
     def test_create_incident(self, render_mocker):
-        incident = Incident.objects.create(channel=self.channel)
-        
+        incident = Incident.objects.create(channel=self.channel, malfunction_reason=self.malfunction_reason)
+
         channel_detail({}, self.channel.id)
 
         render_mocker.assert_called_once_with(
@@ -41,9 +43,12 @@ class TestChannelDetailView(TestCase):
                         note=None,
                         author=None,
                         resolved_at=None,
-                        malfunction_reasons=[],
+                        malfunction_reason={
+                            "name": self.malfunction_reason.name,
+                            "description": self.malfunction_reason.description,
+                        }
                     )
-                ]
+                ],
             }
         )
 

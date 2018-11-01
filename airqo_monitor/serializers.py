@@ -35,14 +35,14 @@ class MalfunctionReasonSerializer(serializers.ModelSerializer):
 class IncidentSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField()
     resolved_at = serializers.DateTimeField()
-    malfunction_reasons = MalfunctionReasonSerializer(many=True)
+    malfunction_reason = MalfunctionReasonSerializer()
 
     class Meta:
         model = Incident
         fields = (
             'created_at',
             'resolved_at',
-            'malfunction_reasons',
+            'malfunction_reason',
         )
 
 
@@ -66,7 +66,7 @@ class ChannelHistorySerializer(serializers.Serializer):
     note = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
     resolved_at = serializers.SerializerMethodField()
-    malfunction_reasons = serializers.SerializerMethodField()
+    malfunction_reason = serializers.SerializerMethodField()
 
     def get_object_type(self, obj):
         if isinstance(obj, ChannelNote):
@@ -95,10 +95,10 @@ class ChannelHistorySerializer(serializers.Serializer):
         if object_type == 'incident':
             return obj.resolved_at
 
-    def get_malfunction_reasons(self, obj):
+    def get_malfunction_reason(self, obj):
         object_type = self.get_object_type(obj)
         if object_type == 'channel_note':
             return None
         if object_type == 'incident':
-            reasons = obj.malfunction_reasons
-            return MalfunctionReasonSerializer(reasons, many=True).data
+            reason = obj.malfunction_reason
+            return MalfunctionReasonSerializer(reason).data

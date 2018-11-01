@@ -34,6 +34,12 @@ class Incident(models.Model):
         db_index=True,
         on_delete=models.DO_NOTHING,
     )
+    malfunction_reason = models.ForeignKey(
+        MalfunctionReason,
+        null=False,
+        db_index=True,
+        on_delete=models.DO_NOTHING,
+    )
 
     def __str__(self):
         return '{}: {}'.format(
