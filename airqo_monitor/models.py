@@ -18,6 +18,28 @@ class Channel(models.Model):
         return '{}: {}'.format(self.channel_id, self.name)
 
 
+class MalfunctionReason(models.Model):
+
+    class Meta:
+        db_table = 'malfunction_reason'
+
+    name = models.TextField(
+        null=False,
+        db_index=True,
+    )
+    description = models.TextField(null=False)
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def incidents(self):
+        incident_ids = self.get_incident_ids()
+        return Incident.objects.filter(
+            id__in=list(incident_ids)
+        ).all()
+
+
 class Incident(models.Model):
 
     class Meta:
@@ -46,28 +68,6 @@ class Incident(models.Model):
             self.channel.name,
             'resolved' if self.resolved_at else 'not resolved',
         )
-
-
-class MalfunctionReason(models.Model):
-
-    class Meta:
-        db_table = 'malfunction_reason'
-
-    name = models.TextField(
-        null=False,
-        db_index=True,
-    )
-    description = models.TextField(null=False)
-
-    def __str__(self):
-        return self.name
-
-    @property
-    def incidents(self):
-        incident_ids = self.get_incident_ids()
-        return Incident.objects.filter(
-            id__in=list(incident_ids)
-        ).all()
 
 
 class ChannelNote(models.Model):
