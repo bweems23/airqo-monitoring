@@ -89,6 +89,7 @@ def update_db(channels):
             if reason_name not in current_incident_reasons:
                 # If the incident is no longer reported, we consider it resolved.
                 incident.resolved_at = datetime.now()
+                incident.save()
             else:
                 # If the incident already exists we don't want to create a new Incident object.
                 current_incident_reasons.remove(reason_name)

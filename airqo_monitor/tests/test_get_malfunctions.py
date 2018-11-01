@@ -17,6 +17,12 @@ from airqo_monitor.get_malfunctions import (
     _has_low_reporting_frequency,
     _sensor_is_reporting_outliers,
     get_all_channel_malfunctions,
+    update_db,
+)
+from airqo_monitor.models import (
+    Channel,
+    Incident,
+    MalfunctionReason,
 )
 
 class TestGetMalfunctions(unittest.TestCase):
@@ -133,3 +139,36 @@ class TestGetMalfunctions(unittest.TestCase):
                 "possible_malfunction_reasons": ['reporting_outliers'],
             }
         ]
+
+    def test_update_db_creates_incidents(self):
+        reason = MalfunctionReason.objects.create(name='reason', description='Reason')
+        channel = Channel.objects.create(channel_id='123', name='Test Channel')
+
+        channels = [
+            {
+            'channel_id': '123',
+            'possible_malfunction_reasons': ['reason']
+            }
+        ]
+        update_db(channels)
+
+        incident = Incident.objects.last()
+        assert incident.channel == channel
+        assert incident.malfunction_reason == reason
+        assert incident.resolved_at is None
+
+    def test_update_db_resolves_incidents(self):
+        reason = MalfunctionReason.objects.create(name='reason', description='Reason')
+        channel = Channel.objects.create(channel_id='1234', name='Test Channel')
+        incident = Incident.objects.create(channel=channel, malfunction_reason=reason)
+
+        channels = [
+            {
+            'channel_id': '1234',
+            'possible_malfunction_reasons': []
+            }
+        ]
+        update_db(channels)
+
+        incident = Incident.objects.get(id=incident.id)
+        assert incident.resolved_at is not None
