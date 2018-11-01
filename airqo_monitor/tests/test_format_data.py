@@ -167,4 +167,3 @@ class TestFormatData(unittest.TestCase):
         channel_ids_to_names_update = {1: {"name": "NEWchannel1"}}
         _update_db_channel_table(channel_ids_to_names_update)
         assert Channel.objects.first().name == "NEWchannel1"
-
