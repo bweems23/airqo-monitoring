@@ -9,7 +9,6 @@ from airqo_monitor.models import (
     Channel,
     ChannelNote,
     Incident,
-    IncidentMalfunctionReasonLink,
     MalfunctionReason,
 )
 from airqo_monitor.utils import (
