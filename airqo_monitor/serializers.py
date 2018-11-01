@@ -68,7 +68,7 @@ class ChannelNoteSerializer(serializers.ModelSerializer):
 
 class ChannelHistorySerializer(serializers.Serializer):
     object_type = serializers.SerializerMethodField()
-    created_at = serializers.DateTimeField()
+    created_at = serializers.SerializerMethodField()
     note = serializers.SerializerMethodField()
     author = serializers.SerializerMethodField()
     resolved_at = serializers.SerializerMethodField()
@@ -93,6 +93,9 @@ class ChannelHistorySerializer(serializers.Serializer):
             return obj.author
         if object_type == 'incident':
             return None
+
+    def get_created_at(self, obj):
+        return obj.created_at
 
     def get_resolved_at(self, obj):
         object_type = self.get_object_type(obj)
