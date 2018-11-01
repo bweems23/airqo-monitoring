@@ -21,4 +21,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("channels/<int:channel_id>/", airqo_monitor.views.channel_detail, name="channel_detail"),
     path("channel_notes/", airqo_monitor.views.channel_notes, name="channel_note"),
+    path("update_incidents/", airqo_monitor.views.update_incidents, name='update_incidents'),
 ]
