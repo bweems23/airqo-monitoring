@@ -9,7 +9,6 @@ from airqo_monitor.models import (
     Channel,
     ChannelNote,
     Incident,
-    IncidentMalfunctionReasonLink,
     MalfunctionReason,
 )
 from airqo_monitor.utils import (
@@ -21,6 +20,7 @@ from airqo_monitor.utils import (
 class TestUtils(TestCase):
     def setUp(self):
         self.channel = Channel.objects.create(channel_id=1, name='Test Name')
+        self.malfunction_reason = MalfunctionReason.objects.create(name="Test Reason", description="test")
 
     def test_get_channel_history(self):
         note1 = ChannelNote.objects.create(
@@ -34,7 +34,7 @@ class TestUtils(TestCase):
             note='note',
         )
         incident1 = Incident.objects.create(
-            channel=self.channel
+            channel=self.channel, malfunction_reason=self.malfunction_reason
         )
         note3 = ChannelNote.objects.create(
             channel=self.channel,
@@ -42,7 +42,7 @@ class TestUtils(TestCase):
             note='note',
         )
         incident2 = Incident.objects.create(
-            channel=self.channel
+            channel=self.channel, malfunction_reason=self.malfunction_reason
         )
         history = get_channel_history(self.channel)
         assert history[0] == incident2
