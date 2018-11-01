@@ -112,9 +112,11 @@ class TestGetMalfunctions(unittest.TestCase):
         assert _sensor_is_reporting_outliers(self.sample_channel_data) == True
 
 
+    @mock.patch('airqo_monitor.get_malfunctions.update_db')
     @mock.patch('airqo_monitor.get_malfunctions._get_channel_malfunctions')
     @mock.patch('airqo_monitor.get_malfunctions.get_and_format_data_for_all_channels')
-    def test_get_all_channel_malfunctions(self, get_and_format_data_for_all_channels_mocker, _get_channel_malfunctions_mocker):
+    def test_get_all_channel_malfunctions(self, get_and_format_data_for_all_channels_mocker, _get_channel_malfunctions_mocker, update_db_mocker):
+        update_db_mocker.return_value = None
         get_and_format_data_for_all_channels_mocker.return_value =  {
             '123':
             {
@@ -123,8 +125,9 @@ class TestGetMalfunctions(unittest.TestCase):
             }
         }
         _get_channel_malfunctions_mocker.return_value = ['reporting_outliers']
-
-        assert get_all_channel_malfunctions() == [
+        all_channel_malfunctions = get_all_channel_malfunctions()
+        import pdb; pdb.set_trace()
+        assert all_channel_malfunctions == [
             {
                 "channel_id": '123',
                 "name": "channel123",
