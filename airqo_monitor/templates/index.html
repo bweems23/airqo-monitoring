@@ -51,17 +51,17 @@
     <h1 style="text-align:center"> AirQo Device Monitor </h1>
 
     <div class="wrapper">
-            {% for channel in malfunctioning_channels %}
-                <div class="{% if channel.possible_malfunction_reasons %} malfunctioning_block {% else %} functioning_block {% endif %};">
+            {% for channel in channels %}
+                <div class="{% if channel.active_incidents %} malfunctioning_block {% else %} functioning_block {% endif %};">
                     <p style="text-align:center">
                         <a href="/channels/{{ channel.channel_id }}"><strong>{{ channel.name }}</strong></a>
                     </p>
                     <div style="margin-left:5px;">
-                        {% if channel.possible_malfunction_reasons %}
+                        {% if channel.active_incidents %}
                             <ul style="margin-bottom:0px;">
                                 <li>
-                                    {% for reason in channel.possible_malfunction_reasons %}
-                                        <p> {{ reason }} </p>
+                                    {% for incident in channel.active_incidents %}
+                                        <p> {{ incident.malfunction_reason.description }} </p>
                                     {% endfor %}
                                 </li>
                             </ul>

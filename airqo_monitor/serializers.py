@@ -8,18 +8,6 @@ from airqo_monitor.models import (
 )
 
 
-class ChannelSerializer(serializers.ModelSerializer):
-    channel_id = serializers.IntegerField()
-    name = serializers.CharField(max_length=100)
-
-    class Meta:
-        model = Channel
-        fields = (
-            'channel_id',
-            'name',
-        )
-
-
 class MalfunctionReasonSerializer(serializers.ModelSerializer):
     name = serializers.CharField(max_length=100)
     description = serializers.CharField(max_length=500)
@@ -43,6 +31,24 @@ class IncidentSerializer(serializers.ModelSerializer):
             'created_at',
             'resolved_at',
             'malfunction_reason',
+        )
+
+
+class ChannelSerializer(serializers.ModelSerializer):
+    channel_id = serializers.IntegerField()
+    name = serializers.CharField(max_length=100)
+    active_incidents = serializers.SerializerMethodField()
+
+    def get_active_incidents(self, obj):
+        incidents = Incident.objects.filter(channel=obj, resolved_at__isnull=True)
+        return IncidentSerializer(incidents, many=True).data
+
+    class Meta:
+        model = Channel
+        fields = (
+            'channel_id',
+            'name',
+            'active_incidents',
         )
 
 
