@@ -35,6 +35,16 @@ class TestChannelDetailView(TestCase):
                 "channel": {
                     "channel_id": self.channel.id,
                     "name": self.channel.name,
+                    "active_incidents": [
+                        collections.OrderedDict(
+                            created_at=datetime.strftime(incident.created_at,'%Y-%m-%dT%H:%M:%S.%fZ'),
+                            resolved_at=None,
+                            malfunction_reason=collections.OrderedDict(
+                                name=self.malfunction_reason.name,
+                                description=self.malfunction_reason.description,
+                            ),
+                        )
+                    ]
                 },
                 "history": [
                     collections.OrderedDict(

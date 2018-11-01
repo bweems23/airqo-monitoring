@@ -126,7 +126,6 @@ class TestGetMalfunctions(unittest.TestCase):
         }
         _get_channel_malfunctions_mocker.return_value = ['reporting_outliers']
         all_channel_malfunctions = get_all_channel_malfunctions()
-        import pdb; pdb.set_trace()
         assert all_channel_malfunctions == [
             {
                 "channel_id": '123',
