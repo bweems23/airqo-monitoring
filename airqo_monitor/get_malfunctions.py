@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from werkzeug.contrib.cache import SimpleCache
 from copy import deepcopy
 
-from airqo_monitor.models import Incident, Channel, MalfunctionReason, IncidentMalfunctionReasonLink
+from airqo_monitor.models import Incident, Channel, MalfunctionReason
 
 from airqo_monitor.format_data import get_and_format_data_for_all_channels
 from airqo_monitor.constants import (
@@ -85,25 +85,21 @@ def update_db(channels):
         existing_channel_incidents = Incident.objects.filter(channel=channel_object, resolved_at__isnull=True)
         current_incident_reasons = deepcopy(channel["possible_malfunction_reasons"])
         for incident in existing_channel_incidents:
-            incident_reason_links = IncidentMalfunctionReasonLink.objects.filter(incident=incident).first()
-            if incident_reason_links:
-                reason_name = incident_reason_links.malfunction_reason.name
-                if reason_name not in current_incident_reasons:
-                    # If the incident is no longer reported, we consider it resolved.
-                    incident.resolved_at = datetime.now()
-                else:
-                    # If the incident already exists we don't want to create a new Incident object.
-                    current_incident_reasons.remove(reason_name)
+            reason_name = incident.malfunction_reason.name
+            if reason_name not in current_incident_reasons:
+                # If the incident is no longer reported, we consider it resolved.
+                incident.resolved_at = datetime.now()
+            else:
+                # If the incident already exists we don't want to create a new Incident object.
+                current_incident_reasons.remove(reason_name)
 
         # Create new incidents and their reason links.
         if current_incident_reasons:
             # Create one incident per reason.
-            for reason in current_incident_reasons:
+            for malfunction_reason_name in current_incident_reasons:
                 # Create the incident and connect it to a reason.
-                incident = Incident.objects.create(channel=channel_object)
-                reason = MalfunctionReason.objects.filter(name=reason).first()
-                if reason:
-                    IncidentMalfunctionReasonLink.objects.create(incident=incident, malfunction_reason=reason)
+                malfunction_reason = MalfunctionReason.objects.filter(name=malfunction_reason_name).first()
+                incident = Incident.objects.create(channel=channel_object, malfunction_reason=malfunction_reason)
 
 
 def get_all_channel_malfunctions():
