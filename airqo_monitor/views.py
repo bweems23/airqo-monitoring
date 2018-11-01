@@ -75,6 +75,5 @@ def channel_notes(request):
 
 
 def update_incidents(request):
-    print("GETTING MALFUNCTIONS")
     get_all_channel_malfunctions()
     return redirect('/')

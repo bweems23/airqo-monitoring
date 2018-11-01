@@ -92,9 +92,9 @@
     <h1 style="text-align:center"> AirQo Device Monitor </h1>
 
     <center>
-      <form action="/update_incidents/", method="post" enctype="multipart/form-data">
+      <form action="/update_incidents/", method="post">
         {% csrf_token %}
-        <input class=update_data_button type="submit" value="Update Channel Data">
+        <button class=update_data_button type="submit">Update Channel Data</button>
         <br/>(this may take a while)
       </form>
     </center>
