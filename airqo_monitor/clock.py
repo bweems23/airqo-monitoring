@@ -1,4 +1,4 @@
-# import django
+import django
 
 # from django.conf import settings
 
@@ -11,7 +11,7 @@ from airqo_monitor.get_malfunctions import (
 
 
 # settings.configure()
-# django.setup()
+django.setup()
 sched = BlockingScheduler()
 
 @sched.scheduled_job('interval', minutes=1)
@@ -27,3 +27,20 @@ def update_channel_data():
     get_all_channel_malfunctions()
 
 sched.start()
+# import time
+
+# from apscheduler.schedulers.background import BackgroundScheduler
+# from django_apscheduler.jobstores import DjangoJobStore, register_events, register_job
+
+# scheduler = BackgroundScheduler()
+# scheduler.add_jobstore(DjangoJobStore(), "default")
+
+# @register_job(scheduler, "interval", minutes=1)
+# def test_job():
+#     print("I'm a test job!")
+#     # raise ValueError("Olala!")
+
+# register_events(scheduler)
+
+# scheduler.start()
+# print("Scheduler started!")
