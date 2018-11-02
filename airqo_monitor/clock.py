@@ -1,6 +1,6 @@
 # import django
 
-from django.conf import settings
+# from django.conf import settings
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
@@ -10,7 +10,7 @@ from airqo_monitor.get_malfunctions import (
 )
 
 
-settings.configure()
+# settings.configure()
 # django.setup()
 sched = BlockingScheduler()
 
