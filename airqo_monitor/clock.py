@@ -1,5 +1,9 @@
+import django
+
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+
+django.setup()
 sched = BlockingScheduler()
 
 @sched.scheduled_job('interval', minutes=1)
