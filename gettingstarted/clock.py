@@ -2,7 +2,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 
 sched = BlockingScheduler()
 
-@sched.scheduled_job('interval', minutes=5)
+@sched.scheduled_job('interval', minutes=1)
 def update_channel_data_interval():
     from airqo_monitor.models import ChannelNote
     from airqo_monitor.get_malfunctions import (
