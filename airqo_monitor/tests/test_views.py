@@ -49,7 +49,7 @@ class TestChannelDetailView(TestCase):
                 "history": [
                     collections.OrderedDict(
                         object_type='incident',
-                        created_at=datetime.strftime(incident.created_at,'%Y-%m-%dT%H:%M:%S.%fZ'),
+                        created_at=incident.created_at,
                         note=None,
                         author=None,
                         resolved_at=None,
