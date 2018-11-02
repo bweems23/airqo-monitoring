@@ -64,14 +64,14 @@
           {% if point.object_type == 'channel_note' %}
             <div class=note_block>
               <strong>NOTE</strong><br/>
-              <strong>Time:</strong> {{ point.created_at }}<br/>
+              <strong>Created at:</strong> {{ point.created_at }}<br/>
               <strong>Author:</strong> {{ point.author }}<br/>
               <strong>Note:</strong> {{ point.note }}
             </div>
           {% else %}
             <div class="{% if point.resolved_at %} resolved_incident_block {% else %} incident_block {% endif %};">
               <strong>INCIDENT</strong><br/>
-              <strong>Time:</strong> {{ point.created_at }}<br/>
+              <strong>Created at:</strong> {{ point.created_at }}<br/>
               <strong>Resolved at:</strong> {{ point.resolved_at }}<br/>
               <strong>Reason:</strong> {{ point.malfunction_reason.description }}
               <ul>
