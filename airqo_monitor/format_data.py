@@ -93,6 +93,7 @@ def update_all_channel_data():
         update_all_channels_for_channel_type(channel_type)
 
 
+<<<<<<< HEAD
 def get_and_format_data_for_all_channels(start_time=None, end_time=None):
     """
     Update the channels from Thingspeak, then get and format data between start_time and end_time
@@ -110,3 +111,13 @@ def get_and_format_data_for_all_channels(start_time=None, end_time=None):
         all_channels_dict[channel.channel_id] = {'channel': channel, 'data': data}
 
     return all_channels_dict
+
+def get_and_format_heatmap_data_for_all_channels(start_time=None, end_time=None):
+    all_channels_dict = get_channel_ids_to_names()
+    points = []
+
+    for channel_id in list(all_channels_dict.keys())[:1]:
+        data = get_and_format_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
+        points += [[data_entry.latitude, data_entry.longitude] for data_entry in data]
+
+    return points

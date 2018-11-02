@@ -1,0 +1,261 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Create a heatmap layer</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+  </head>
+
+  <body>
+    <div id="floating-panel">
+      <div class="group">
+        <div class="subject">Toggle Heatmap</div>
+        <button onclick="toggleHeatmap()">Toggle</button>
+      </div>
+      <div class="group">
+          <div class="subject">Radius <span id=radiusNum>21</span></div>
+          <button onclick="changeRadius(true)">Up</button>
+          <button onclick="changeRadius(false)">Down</button>
+      </div>
+      <div class="group">
+          <div class="subject">Intensity <span id=intensityNum>200</span></div>
+          <button onclick="changeIntensity(true)">Up</button>
+          <button onclick="changeIntensity(false)">Down</button>
+      </div>
+      <div class="group">
+          <div class="subject">Opacity <span id=opacityNum>.6</span></div>
+          <button onclick="changeOpacity(true)">Up</button>
+          <button onclick="changeOpacity(false)">Down</button>
+      </div>
+    </div>
+    <div id="map"></div>
+    <script>
+
+      const maxI = 200, rad = 21, opac = .6;
+
+      mapboxgl.accessToken = 'pk.eyJ1IjoiYWlycW8iLCJhIjoiY2pvMDIzd3RxMGN2eTNwbXExdjdwb2xidCJ9.sxve698GErIe5KNnLvNhJQ';
+      var map = new mapboxgl.Map({
+          container: 'map',
+          style: 'mapbox://styles/mapbox/dark-v9',
+          center: [-120, 50],
+          zoom: 2
+      });
+
+      map.on('load', function() {
+      // Add a geojson point source.
+      // Heatmap layers also work with a vector tile source.
+      map.addSource('earthquakes', {
+          "type": "geojson",
+          "data": "https://www.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"
+      });
+
+      map.addLayer({
+          "id": "earthquakes-heat",
+          "type": "heatmap",
+          "source": "earthquakes",
+          "maxzoom": 9,
+          "paint": {
+              // Increase the heatmap weight based on frequency and property magnitude
+              "heatmap-weight": [
+                  "interpolate",
+                  ["linear"],
+                  ["get", "mag"],
+                  0, 0,
+                  6, 1
+              ],
+              // Increase the heatmap color weight weight by zoom level
+              // heatmap-intensity is a multiplier on top of heatmap-weight
+              "heatmap-intensity": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  0, 1,
+                  9, 3
+              ],
+              // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+              // Begin color ramp at 0-stop with a 0-transparancy color
+              // to create a blur-like effect.
+              "heatmap-color": [
+                  "interpolate",
+                  ["linear"],
+                  ["heatmap-density"],
+                  0, "rgba(33,102,172,0)",
+                  0.2, "rgb(103,169,207)",
+                  0.4, "rgb(209,229,240)",
+                  0.6, "rgb(253,219,199)",
+                  0.8, "rgb(239,138,98)",
+                  1, "rgb(178,24,43)"
+              ],
+              // Adjust the heatmap radius by zoom level
+              "heatmap-radius": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  0, 2,
+                  9, 20
+              ],
+              // Transition from heatmap to circle layer by zoom level
+              "heatmap-opacity": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  7, 1,
+                  9, 0
+              ],
+          }
+        }, 'waterway-label');
+
+        map.addLayer({
+            "id": "earthquakes-point",
+            "type": "circle",
+            "source": "earthquakes",
+            "minzoom": 7,
+            "paint": {
+                // Size circle radius by earthquake magnitude and zoom level
+                "circle-radius": [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    7, [
+                        "interpolate",
+                        ["linear"],
+                        ["get", "mag"],
+                        1, 1,
+                        6, 4
+                    ],
+                    16, [
+                        "interpolate",
+                        ["linear"],
+                        ["get", "mag"],
+                        1, 5,
+                        6, 50
+                    ]
+                ],
+                // Color circle by earthquake magnitude
+                "circle-color": [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "mag"],
+                    1, "rgba(33,102,172,0)",
+                    2, "rgb(103,169,207)",
+                    3, "rgb(209,229,240)",
+                    4, "rgb(253,219,199)",
+                    5, "rgb(239,138,98)",
+                    6, "rgb(178,24,43)"
+                ],
+                "circle-stroke-color": "white",
+                "circle-stroke-width": 1,
+                // Transition from heatmap to circle layer by zoom level
+                "circle-opacity": [
+                    "interpolate",
+                    ["linear"],
+                    ["zoom"],
+                    7, 0,
+                    8, 1
+                ]
+            }
+        }, 'waterway-label');
+    });
+
+      // This example requires the Visualization library. Include the libraries=visualization
+      // parameter when you first load the API. For example:
+      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+      var map, heatmap;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 0.3476, lng: 32.5825},
+          mapTypeId: 'roadmap'
+        });
+
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: getPoints(),
+          map: map,
+          maxIntensity: maxI,
+          radius: rad,
+          opacity: opac
+        });
+      }
+
+      function toggleHeatmap() {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+
+      function changeGradient() {
+        var gradient = [
+          'rgba(0, 255, 255, 0)',
+          'rgba(0, 255, 255, 1)',
+          'rgba(0, 191, 255, 1)',
+          'rgba(0, 127, 255, 1)',
+          'rgba(0, 63, 255, 1)',
+          'rgba(0, 0, 255, 1)',
+          'rgba(0, 0, 223, 1)',
+          'rgba(0, 0, 191, 1)',
+          'rgba(0, 0, 159, 1)',
+          'rgba(0, 0, 127, 1)',
+          'rgba(63, 0, 91, 1)',
+          'rgba(127, 0, 63, 1)',
+          'rgba(191, 0, 31, 1)',
+          'rgba(255, 0, 0, 1)'
+        ]
+        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+      }
+
+      // Function to change the radius of data points on heatmap
+      // function changeRadius(bool) {
+        // const step = 3, min = 0, max = 100;
+        // let current = heatmap.get('radius');
+        // let newValue = toggleUpDown(bool, current, step, min, max);
+        // heatmap.set('radius', newValue);
+        // document.getElementById("radiusNum").innerText = newValue;
+      // };
+      // // Function to change the opacity of the heatmap
+      // function changeOpacity(bool) {
+        // const step = .2, min = 0, max = 1;
+        // let current = heatmap.get('opacity');
+        // let newValue = toggleUpDown(bool, current, step, min, max);
+        // let rounded = round(newValue, 1);
+        // heatmap.set('opacity', rounded);
+        // document.getElementById("opacityNum").innerText = rounded;
+      // }
+      // // Function to change maxIntensity of the heatmap
+      // function changeIntensity(bool) {
+        // const step = 25, min = 0, max = 1000;
+        // let current = heatmap.get('maxIntensity');
+        // let newValue = toggleUpDown(bool, current, step, min, max);
+        // heatmap.set('maxIntensity', newValue);
+        // document.getElementById("intensityNum").innerText = newValue;
+      // };
+      // // Changes our toggle values and keeps them within our min/max values
+      // function toggleUpDown(bool, current, step, min, max){
+        // if (bool && current >= max) return current;
+        // if (!bool && current <= min) return current;
+        // if (bool) return current + step;
+        // return current - step;
+      // }
+      // // Used to round the opacity toggle to one decimal place
+      // function round(value, precision) {
+        // var multiplier = Math.pow(10, precision || 0);
+        // return Math.round(value * multiplier) / multiplier;
+      // }
+//
+      // function getPoints() {
+        // var points = {{ points|safe }};
+        // var gmap_points = [];
+        // for (var i = 0; i < points.length; i++) {
+          // gmap_points.push(new google.maps.LatLng(points[i][0], points[i][1]));
+        // }
+        // return gmap_points;
+      // }
+    </script>
+  </body>
+</html>
