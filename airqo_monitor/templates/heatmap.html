@@ -1,5 +1,7 @@
 {% load static %}
+{% block content %}
 
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
   <head>
@@ -8,6 +10,7 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="{% static 'css/heatmapStyle.css' %}">
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
@@ -173,7 +176,7 @@
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 13,
-          center: {lat: 0.3476, lng: 32.5825},
+          center: {lat: 0.2976, lng: 32.5825},
           mapTypeId: 'roadmap'
         });
 
@@ -257,5 +260,4 @@
         // return gmap_points;
       // }
     </script>
-  </body>
-</html>
+{% endblock %}
