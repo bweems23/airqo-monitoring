@@ -1,0 +1,31 @@
+.wrapper{
+    margin-left: 10px;
+}
+.note_block {
+    background-color: #D1F8FF;
+    margin-left: 5px;
+    display: inline-block;
+    padding: 20px;
+}
+
+.incident_block {
+    background-color: #FBC9BE;
+    margin-left: 5px;
+    display: inline-block;
+    padding: 20px;
+}
+
+.resolved_incident_block {
+    background-color: #d3ffce;
+    margin-left: 5px;
+    display: inline-block;
+    padding: 20px;
+}
+
+.note_form{
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+    display: inline-block;
+    padding: 20px;
+}
