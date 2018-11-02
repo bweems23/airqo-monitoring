@@ -1,4 +1,4 @@
-import django
+# import django
 
 # from django.conf import settings
 
@@ -9,9 +9,13 @@ from airqo_monitor.get_malfunctions import (
     get_all_channel_malfunctions
 )
 
+import os
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gettingstarted.settings")
+
 
 # settings.configure()
-django.setup()
+# django.setup()
 sched = BlockingScheduler()
 
 @sched.scheduled_job('interval', minutes=1)
