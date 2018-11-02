@@ -69,10 +69,17 @@ def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
 def _update_db_channel_table(channel_ids_to_names):
     for channel_id, channel_info in channel_ids_to_names.items():
         channel, _ = Channel.objects.get_or_create(channel_id=channel_id)
+        update_fields = []
+        if not channel.is_active:
+            channel.is_active = True
+            update_fields.append('is_active')
         channel_name = channel_info["name"]
         if channel.name != channel_name:
             channel.name = channel_name
-            channel.save()
+            update_fields.append('name')
+
+        if len(update_fields) > 0:
+            channel.save(update_fields=update_fields)
 
 
 def get_and_format_data_for_all_channels(start_time=None, end_time=None):

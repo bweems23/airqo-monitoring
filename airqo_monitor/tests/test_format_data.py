@@ -167,3 +167,12 @@ class TestFormatData(unittest.TestCase):
         channel_ids_to_names_update = {1: {"name": "NEWchannel1"}}
         _update_db_channel_table(channel_ids_to_names_update)
         assert Channel.objects.first().name == "NEWchannel1"
+
+    def test_udpate_db_channel_reactivates_channel(self):
+        channel = Channel.objects.create(channel_id=555, name='Test Name', is_active=False)
+        channel_ids_to_names = {555: {"name": "Test Name"}}
+        _update_db_channel_table(channel_ids_to_names)
+
+        channel = Channel.objects.get(id=channel.id)
+        assert channel.is_active
+        assert channel.name == 'Test Name'

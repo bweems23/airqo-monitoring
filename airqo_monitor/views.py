@@ -26,7 +26,7 @@ def index(request):
     return render(
         request,
         "index.html",
-        context={"channels": ChannelSerializer(Channel.objects.all(), many=True).data},
+        context={"channels": ChannelSerializer(Channel.objects.filter(is_active=True), many=True).data},
     )
 
 

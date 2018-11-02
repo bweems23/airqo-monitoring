@@ -13,6 +13,7 @@ class Channel(models.Model):
         unique=True,
     )
     name = models.TextField(null=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return '{}: {}'.format(self.channel_id, self.name)
