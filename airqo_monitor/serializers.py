@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework import serializers
 
 from airqo_monitor.models import (
@@ -95,14 +96,18 @@ class ChannelHistorySerializer(serializers.Serializer):
             return None
 
     def get_created_at(self, obj):
-        return obj.created_at
+        return datetime.strftime(obj.local_created_at,'%d/%m/%Y at %H:%M')
 
     def get_resolved_at(self, obj):
         object_type = self.get_object_type(obj)
         if object_type == 'channel_note':
             return None
         if object_type == 'incident':
-            return obj.resolved_at
+            resolved_at = obj.local_resolved_at
+            if resolved_at:
+                return datetime.strftime(resolved_at,'%d/%m/%Y at %H:%M')
+            else:
+                return None
 
     def get_malfunction_reason(self, obj):
         object_type = self.get_object_type(obj)

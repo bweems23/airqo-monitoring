@@ -1,4 +1,8 @@
+import pytz
+
 from django.db import models
+
+from airqo_monitor.constants import PYTZ_KAMPALA_STRING
 
 
 class Channel(models.Model):
@@ -70,6 +74,17 @@ class Incident(models.Model):
             'resolved' if self.resolved_at else 'not resolved',
         )
 
+    @property
+    def local_created_at(self):
+        local_tz = pytz.timezone(PYTZ_KAMPALA_STRING)
+        return self.created_at.astimezone(local_tz)
+
+    @property
+    def local_resolved_at(self):
+        local_tz = pytz.timezone(PYTZ_KAMPALA_STRING)
+        utc_resolved_at = self.resolved_at
+        return utc_resolved_at.astimezone(local_tz) if utc_resolved_at else None
+
 
 class ChannelNote(models.Model):
 
@@ -88,3 +103,8 @@ class ChannelNote(models.Model):
 
     def __str__(self):
         return '{} -{}'.format(self.note, self.author)
+
+    @property
+    def local_created_at(self):
+        local_tz = pytz.timezone(PYTZ_KAMPALA_STRING)
+        return self.created_at.astimezone(local_tz)
