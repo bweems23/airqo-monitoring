@@ -28,7 +28,7 @@ from airqo_monitor.models import (
 class TestGetMalfunctions(unittest.TestCase):
 
     sample_channel_data = [
-        DataEntry(
+        dict(
             battery_voltage=u'4.50',
             channel_id=324682,
             created_at=u'2018-10-22T09:00:52Z',
@@ -40,7 +40,7 @@ class TestGetMalfunctions(unittest.TestCase):
             pm_2_5=u'1.80',
             sample_period=u'1.39'
         ),
-        DataEntry(
+        dict(
             battery_voltage=u'4.50',
             channel_id=324682,
             created_at=u'2018-10-22T09:00:52Z',
@@ -52,7 +52,7 @@ class TestGetMalfunctions(unittest.TestCase):
             pm_2_5=u'1.80',
             sample_period=u'1.39'
         ),
-        DataEntry(
+        dict(
             battery_voltage=u'4.50',
             channel_id=324682,
             created_at=u'2018-10-22T09:00:52Z',
@@ -74,7 +74,7 @@ class TestGetMalfunctions(unittest.TestCase):
         _has_low_reporting_frequency_mocker.return_value = True
         _has_low_battery_mocker.return_value = False
         _sensor_is_reporting_outliers_mocker.return_value = False
-        malfunctions = _get_channel_malfunctions(self.sample_channel_data)
+        malfunctions = _get_channel_malfunctions(self.sample_channel_data, channel_type='airqo')
 
         assert "low_reporting_frequency" in malfunctions
         assert "low_battery_voltage" not in malfunctions
@@ -82,40 +82,40 @@ class TestGetMalfunctions(unittest.TestCase):
         assert "no_data" not in malfunctions
 
         # We expect "no_data" to be the returned malfunction when we pass in no data.
-        malfunctions = _get_channel_malfunctions([])
+        malfunctions = _get_channel_malfunctions([], channel_type='airqo')
         assert "no_data" in malfunctions
         assert "low_reporting_frequency" not in malfunctions
 
 
     def test_has_low_battery(self):
-        assert _has_low_battery(self.sample_channel_data) == False
+        assert _has_low_battery(self.sample_channel_data, channel_type='airqo') == False
 
         # Set a voltage below the cutoff.
-        self.sample_channel_data[-1].battery_voltage = str(LOW_BATTERY_CUTOFF - 0.1)
-        assert _has_low_battery(self.sample_channel_data) == True
+        self.sample_channel_data[-1]['battery_voltage'] = str(LOW_BATTERY_CUTOFF - 0.1)
+        assert _has_low_battery(self.sample_channel_data, channel_type='airqo') == True
 
 
     def test_has_low_reporting_frequency(self):
-        assert _has_low_reporting_frequency(self.sample_channel_data) == True
+        assert _has_low_reporting_frequency(self.sample_channel_data, channel_type='airqo') == True
 
         # Make the created_at time stamps now so that they look frequent.
         now = datetime.utcnow()
         now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ')
-        self.sample_channel_data[0].created_at = now_str
-        self.sample_channel_data[1].created_at = now_str
-        self.sample_channel_data[2].created_at = now_str
-        assert _has_low_reporting_frequency(self.sample_channel_data) == False
+        self.sample_channel_data[0]['created_at'] = now_str
+        self.sample_channel_data[1]['created_at'] = now_str
+        self.sample_channel_data[2]['created_at'] = now_str
+        assert _has_low_reporting_frequency(self.sample_channel_data, channel_type='airqo') == False
 
 
     def test_sensor_is_reporting_outliers(self):
-        assert _sensor_is_reporting_outliers(self.sample_channel_data) == False
+        assert _sensor_is_reporting_outliers(self.sample_channel_data, channel_type='airqo') == False
 
 
-        self.sample_channel_data[0].pm_2_5 = str(SENSOR_PM_2_5_MIN_CUTOFF - 0.1)
-        assert _sensor_is_reporting_outliers(self.sample_channel_data) == True
+        self.sample_channel_data[0]['pm_2_5'] = str(SENSOR_PM_2_5_MIN_CUTOFF - 0.1)
+        assert _sensor_is_reporting_outliers(self.sample_channel_data, channel_type='airqo') == True
 
-        self.sample_channel_data[0].pm_2_5 = str(SENSOR_PM_2_5_MAX_CUTOFF + 0.1)
-        assert _sensor_is_reporting_outliers(self.sample_channel_data) == True
+        self.sample_channel_data[0]['pm_2_5'] = str(SENSOR_PM_2_5_MAX_CUTOFF + 0.1)
+        assert _sensor_is_reporting_outliers(self.sample_channel_data, channel_type='airqo') == True
 
 
     @mock.patch('airqo_monitor.get_malfunctions.update_db')
@@ -123,30 +123,27 @@ class TestGetMalfunctions(unittest.TestCase):
     @mock.patch('airqo_monitor.get_malfunctions.get_and_format_data_for_all_channels')
     def test_get_all_channel_malfunctions(self, get_and_format_data_for_all_channels_mocker, _get_channel_malfunctions_mocker, update_db_mocker):
         update_db_mocker.return_value = None
+        channel1 = Channel.objects.create(channel_id=5555, name='channel5555')
         get_and_format_data_for_all_channels_mocker.return_value =  {
-            '123':
-            {
-                "data": self.sample_channel_data,
-                "name": "channel123"
-            }
+            channel1: self.sample_channel_data
         }
         _get_channel_malfunctions_mocker.return_value = ['reporting_outliers']
         all_channel_malfunctions = get_all_channel_malfunctions()
         assert all_channel_malfunctions == [
             {
-                "channel_id": '123',
-                "name": "channel123",
-                "possible_malfunction_reasons": ['reporting_outliers'],
+                'name': 'channel5555',
+                'channel_id': 5555,
+                'possible_malfunction_reasons': ['reporting_outliers'],
             }
         ]
 
     def test_update_db_creates_incidents(self):
         reason = MalfunctionReason.objects.create(name='reason', description='Reason')
-        channel = Channel.objects.create(channel_id='123', name='Test Channel')
+        channel = Channel.objects.create(channel_id='111', name='Test Channel')
 
         channels = [
             {
-            'channel_id': '123',
+            'channel_id': '111',
             'possible_malfunction_reasons': ['reason']
             }
         ]

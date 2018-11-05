@@ -8,7 +8,7 @@ from airqo_monitor.constants import (
     THINGSPEAK_FEEDS_LIST_URL,
 )
 from airqo_monitor.external.thingspeak import (
-    get_all_channel_ids,
+    get_all_channels,
     get_api_key_for_channel,
     get_data_for_channel,
 )
@@ -85,29 +85,12 @@ class TestThingspeakAPI(unittest.TestCase):
 
     @mock.patch('airqo_monitor.external.thingspeak.make_get_call')
     @mock.patch('airqo_monitor.external.thingspeak.os.environ.get')
-    def test_get_all_channel_ids(self, env_var_mocker, make_get_call_mocker):
+    def test_get_all_channels(self, env_var_mocker, make_get_call_mocker):
         make_get_call_mocker.return_value = [dict(id=1, name='AIRQO'), dict(id=2, name='AIRQO')]
         env_var_mocker.return_value = 'test_key'
 
-        channels = get_all_channel_ids()
-        assert channels == [1, 2]
-
-        expected_url = '{}/?api_key=test_key'.format(THINGSPEAK_CHANNELS_LIST_URL)
-        make_get_call_mocker.assert_called_once_with(expected_url)
-
-    @mock.patch('airqo_monitor.external.thingspeak.make_get_call')
-    @mock.patch('airqo_monitor.external.thingspeak.os.environ.get')
-    def test_get_all_channel_ids_filters_correct_channels(self, env_var_mocker, make_get_call_mocker):
-        make_get_call_mocker.return_value = [
-            dict(id=1, name='AIRQO Test - ACTIVE'),
-            dict(id=2, name='AIRQO Test - INACTIVE'),
-            dict(id=3, name='Test - ACTIVE'),
-            dict(id=4, name='Test - INACTIVE'),
-        ]
-        env_var_mocker.return_value = 'test_key'
-
-        channels = get_all_channel_ids()
-        assert channels == [1]
+        channels = get_all_channels()
+        assert channels == [{'id': 1, 'name': 'AIRQO'}, {'id': 2, 'name': 'AIRQO'}]
 
         expected_url = '{}/?api_key=test_key'.format(THINGSPEAK_CHANNELS_LIST_URL)
         make_get_call_mocker.assert_called_once_with(expected_url)
