@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sched = BlockingScheduler()
 
-        @sched.scheduled_job('cron', minute='*')
+        @sched.scheduled_job('cron', hour='*')
         def update_channel_data():
             print('Running scheduled tasks...')
             get_all_channel_malfunctions()
