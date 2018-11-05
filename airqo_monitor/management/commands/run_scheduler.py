@@ -5,10 +5,6 @@ from airqo_monitor.get_malfunctions import (
     get_all_channel_malfunctions
 )
 
-from apscheduler.schedulers.blocking import BlockingScheduler
-
-sched = BlockingScheduler()
-
 
 class Command(BaseCommand):
     help = 'Runs all scheduler tasks'
@@ -16,4 +12,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         print('Running scheduled tasks...')
         get_all_channel_malfunctions()
+        ChannelNote.objects.create(channel_id=2, note='updated channel malfunctions', author='rachel')
         print('Scheduled tasks complete.')
