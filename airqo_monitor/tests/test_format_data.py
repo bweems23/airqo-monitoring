@@ -73,7 +73,7 @@ class TestFormatData(unittest.TestCase):
     def test_get_and_format_data_for_channel(self, get_data_for_channel_mocker):
         get_data_for_channel_mocker.return_value = self.sample_json_entries
 
-        data = get_and_format_data_for_channel(Bunch(channel_id=123, channel_type='airqo', data_format=self.sample_data_format))
+        data = get_and_format_data_for_channel(Bunch(channel_id=123, channel_type=Bunch(name='airqo', data_format=self.sample_data_format)))
         assert data[0].get('created_at') == '2017-03-26T22:53:55Z'
         assert data[0].get('channel_id') == 123
         assert data[0].get('entry_id') == 1
@@ -98,7 +98,7 @@ class TestFormatData(unittest.TestCase):
 
         get_data_for_channel_mocker.return_value = sample_json_entries
 
-        data = get_and_format_data_for_channel(Bunch(channel_id=123, channel_type='airqo', data_format=self.sample_data_format))
+        data = get_and_format_data_for_channel(Bunch(channel_id=123, channel_type=Bunch(name='airqo', data_format=self.sample_data_format)))
         assert data[0].get('created_at') == '2017-03-26T22:53:55Z'
         assert data[0].get('channel_id') == 123
         assert data[0].get('entry_id') == 1
@@ -126,7 +126,7 @@ class TestFormatData(unittest.TestCase):
 
         get_data_for_channel_mocker.return_value = sample_json_entries
 
-        data = get_and_format_data_for_channel(Bunch(channel_id=123, channel_type='airqo', data_format=self.sample_data_format))
+        data = get_and_format_data_for_channel(Bunch(channel_id=123, channel_type=Bunch(name='airqo', data_format=self.sample_data_format)))
 
         assert data[0].get('latitude') == '172'
         assert data[0].get('longitude') == '1'

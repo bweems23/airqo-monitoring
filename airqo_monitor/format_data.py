@@ -28,8 +28,8 @@ def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
     field8 (optional): lat,lng,elevation,speed,num_satellites,hdop
     """
     channel_id = channel.channel_id
-    channel_type = channel.channel_type
-    data_format = channel.data_format
+    channel_type_name = channel.channel_type.name
+    data_format = channel.channel_type.data_format
 
     data = get_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
     formatted_data = []
@@ -38,7 +38,7 @@ def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
         entry_data = dict()
         for key, value in data_format.items():
             entry_data[value] = entry.get(key, None)
-        entry_data['type'] = channel_type
+        entry_data['type'] = channel_type_name
         entry_data['entry_id'] = entry['entry_id']
         entry_data['channel_id'] = channel_id
         entry_data['created_at'] = entry['created_at']
