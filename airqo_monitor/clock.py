@@ -14,7 +14,7 @@ sched = BlockingScheduler()
 @sched.scheduled_job('cron', minute=5)
 def update_channel_data():
     management.call_command('run_scheduler')
-    # print('HI')
+    print('HI')
     # ChannelNote.objects.create(channel_id=2, note='test note', author='rachel')
     # get_all_channel_malfunctions()
 
