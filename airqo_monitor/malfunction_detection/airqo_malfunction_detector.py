@@ -3,9 +3,13 @@ from datetime import datetime, timedelta
 from airqo_monitor.malfunction_detection.base_malfunction_detector import MalfunctionDetector
 from airqo_monitor.constants import (
     ALLOWABLE_OUTLIER_SENSOR_RATIO,
+    LOW_BATTERY_MALFUNCTION_REASON_STR,
+    LOW_REPORTING_FREQUENCY_MALFUNCTION_REASON_STR,
     MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS,
+    NO_DATA_MALFUNCTION_REASON_STR,
     NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION,
     NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION,
+    REPORTING_OUTLIERS_MALFUNCTION_REASON_STR,
     SENSOR_PM_2_5_MAX_CUTOFF,
     SENSOR_PM_2_5_MIN_CUTOFF,
 )
@@ -17,14 +21,14 @@ class AirqoMalfunctionDetector(MalfunctionDetector):
         malfunction_list = []
 
         if self._has_no_data(channel_data):
-            malfunction_list.append("no_data")
+            malfunction_list.append(NO_DATA_MALFUNCTION_REASON_STR)
         else:
             if self._has_low_battery(channel_data):
-                malfunction_list.append("low_battery_voltage")
+                malfunction_list.append(LOW_BATTERY_MALFUNCTION_REASON_STR)
             if self._has_low_reporting_frequency(channel_data):
-                malfunction_list.append("low_reporting_frequency")
+                malfunction_list.append(LOW_REPORTING_FREQUENCY_MALFUNCTION_REASON_STR)
             if self._sensor_is_reporting_outliers(channel_data):
-                malfunction_list.append("reporting_outliers")
+                malfunction_list.append(REPORTING_OUTLIERS_MALFUNCTION_REASON_STR)
 
         return malfunction_list
 

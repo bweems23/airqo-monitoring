@@ -1,4 +1,10 @@
-from airqo_monitor.constants import LOW_BATTERY_CUTOFF
+from airqo_monitor.constants import (
+    LOW_BATTERY_CUTOFF,
+    LOW_BATTERY_MALFUNCTION_REASON_STR,
+    LOW_REPORTING_FREQUENCY_MALFUNCTION_REASON_STR,
+    NO_DATA_MALFUNCTION_REASON_STR,
+    REPORTING_OUTLIERS_MALFUNCTION_REASON_STR,
+)
 
 class MalfunctionDetector(object):
 
@@ -6,14 +12,14 @@ class MalfunctionDetector(object):
         malfunction_list = []
 
         if self._has_no_data(channel_data):
-            malfunction_list.append("no_data")
+            malfunction_list.append(NO_DATA_MALFUNCTION_REASON_STR)
         else:
             if self._has_low_battery(channel_data):
-                malfunction_list.append("low_battery_voltage")
+                malfunction_list.append(LOW_BATTERY_MALFUNCTION_REASON_STR)
             if self._has_low_reporting_frequency(channel_data):
-                malfunction_list.append("low_reporting_frequency")
+                malfunction_list.append(LOW_REPORTING_FREQUENCY_MALFUNCTION_REASON_STR)
             if self._sensor_is_reporting_outliers(channel_data):
-                malfunction_list.append("reporting_outliers")
+                malfunction_list.append(REPORTING_OUTLIERS_MALFUNCTION_REASON_STR)
 
         return malfunction_list
 
