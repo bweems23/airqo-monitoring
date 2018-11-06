@@ -1,0 +1,3 @@
+from airqo_monitor.malfunction_detection.airqo_malfunction_detector import AirqoMalfunctionDetector
+from airqo_monitor.malfunction_detection.base_malfunction_detector import MalfunctionDetector
+from airqo_monitor.malfunction_detection.soil_malfunction_detector import SoilMalfunctionDetector

@@ -15,7 +15,13 @@ AIRQO_CHANNEL_TYPE = 'airqo'
 SOIL_CHANNEL_TYPE = 'soil'
 LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME = 'LAST_CHANNEL_UPDATE_TIME'
 
-# Constant values used to determine malfunctions.
+# Incidents
+NO_DATA_MALFUNCTION_REASON_STR = 'no_data'
+LOW_BATTERY_MALFUNCTION_REASON_STR = 'low_battery_voltage'
+LOW_REPORTING_FREQUENCY_MALFUNCTION_REASON_STR = 'low_reporting_frequency'
+REPORTING_OUTLIERS_MALFUNCTION_REASON_STR = 'reporting_outliers'
+
+# Constant values used to determine malfunctions. (Airqo)
 LOW_BATTERY_CUTOFF = 3.3
 
 NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION = 10
