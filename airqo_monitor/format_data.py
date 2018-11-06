@@ -17,15 +17,7 @@ def parse_field8_metadata(field8):
 def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
     """
     Parses thingspeak json response.
-    Field mapping:
-    field1: pm1
-    field2: pm2.5
-    field3: pm10
-    field4: sample period
-    field5: latitude
-    field6: longtitude
-    field7: battery voltage
-    field8 (optional): lat,lng,elevation,speed,num_satellites,hdop
+    Field mapping depends on the channel type's data format
     """
     channel_id = channel.channel_id
     channel_type_name = channel.channel_type.name
@@ -44,43 +36,6 @@ def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
         entry_data['created_at'] = entry['created_at']
         formatted_data.append(entry_data)
 
-    # entry_objects = []
-    # for entry in data:
-    #     entry_object = DataEntry(
-    #         channel_id=channel_id,
-    #         entry_id=entry['entry_id'],
-    #     )
-    #     entry_object.created_at = entry['created_at']
-    #     entry_object.pm_1 = entry['field1']
-    #     entry_object.pm_2_5 = entry['field2']
-    #     entry_object.pm_10 = entry['field3']
-    #     entry_object.sample_period = entry['field4']
-    #     entry_object.battery_voltage = entry['field7']
-
-    #     field8 = entry.get('field8', None)
-    #     if field8:
-    #         try:
-    #             lat, lng, altitude, speed, num_satellites, hdop = parse_field8_metadata(field8)
-    #             entry_object.latitude = lat
-    #             entry_object.longitude = lng
-    #             entry_object.altitude = altitude
-    #             entry_object.speed = speed
-    #             entry_object.num_satellites = num_satellites
-    #             entry_object.hdop = hdop
-    #         except ValueError:
-    #             # there must have been a misformatted field, fallback to the old
-    #             # lat and lng fields
-    #             entry_object.latitude = entry['field5']
-    #             entry_object.longitude = entry['field6']
-    #     else:
-    #         entry_object.latitude = entry['field5']
-    #         entry_object.longitude = entry['field6']
-
-        # we currently only have stationary devices active
-        # entry_object.is_mobile = False
-
-    #     entry_objects.append(entry_object)
-    # return entry_objects
     return formatted_data
 
 

@@ -69,8 +69,6 @@ def _has_low_reporting_frequency(channel_data, channel_type):
         return report_timestamp < cutoff_time
 
     elif channel_type == SOIL_CHANNEL_TYPE:
-        channel_data.get('sensor_1')
-        channel_data.get('sensor_2')
         return True
 
 
