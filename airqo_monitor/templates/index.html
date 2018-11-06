@@ -8,6 +8,8 @@
 <center>
   <form action="/update_incidents/", method="post">
     {% csrf_token %}
+    Last update: {{ last_update_time }}
+    <br/>
     <button class=update_data_button type="submit">Update Channel Data</button>
     <br/>(this may take a while)
   </form>
