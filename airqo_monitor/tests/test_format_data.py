@@ -132,13 +132,13 @@ class TestFormatData(unittest.TestCase):
         assert data[0].get('longitude') == '1'
 
     @mock.patch('airqo_monitor.format_data.get_and_format_data_for_channel')
-    @mock.patch('airqo_monitor.format_data.get_all_channels_cached')
+    @mock.patch('airqo_monitor.format_data.get_all_channels_by_type')
     def test_get_and_format_data_for_all_channels(self, get_all_channels_mocker, get_and_format_data_for_channel_mocker):
         channel_type = ChannelType.objects.create(name='airqo', data_format_json=json.dumps(self.sample_data_format))
 
         get_all_channels_mocker.return_value = [
-            dict(name='channel1', id=9999, tags=[{'name': 'airqo'}]),
-            dict(name='channel2', id=8888, tags=[{'name': 'airqo'}]),
+            dict(name='channel1', channel_id=9999, tags=[{'name': 'airqo'}]),
+            dict(name='channel2', channel_id=8888, tags=[{'name': 'airqo'}]),
         ]
 
         entry = {'entry_id': 1, 'latitude': '1', 'longitude': '1'}

@@ -80,6 +80,13 @@ def get_all_channels_cached():
     return cached_value
 
 
+def get_all_channels_by_type(channel_type):
+    api_key = os.environ.get('THINGSPEAK_USER_API_KEY')
+    full_url = '{}/?api_key={}&tag={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key, channel_type)
+    channels = make_get_call(full_url)
+    return channels
+
+
 def make_post_call(url):
     return json.loads(requests.post(url).content)
 

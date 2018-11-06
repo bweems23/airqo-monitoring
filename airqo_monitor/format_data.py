@@ -1,4 +1,5 @@
 from airqo_monitor.external.thingspeak import (
+    get_all_channels_by_type,
     get_all_channels_cached,
     get_data_for_channel,
 )
@@ -39,53 +40,42 @@ def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
     return formatted_data
 
 
+def _update_db_channel_table(channel, channel_type, new_channel_data):
+    channel_name = new_channel_data['name']
+    update_fields = []
+
+    # Update that channel with its latest data
+    if channel.name != channel_name:
+        channel.name = channel_name
+        update_fields.append('name')
+
+    if not channel.channel_type or channel.channel_type is not channel_type:
+        channel.channel_type = channel_type
+        update_fields.append('channel_type')
+
+    # reactivate channel if Thingspeak thinks it's active
+    if not channel.is_active and INACTIVE_MONITOR_KEYWORD not in channel_name:
+        channel.is_active = True
+        update_fields.append('is_active')
+
+    # Deactivate channel if it's no longer active on Thingspeak
+    if channel.is_active and INACTIVE_MONITOR_KEYWORD in channel_name:
+        channel.is_active = False
+        update_fields.append('is_active')
+
+    if update_fields:
+        channel.save(update_fields=update_fields)
+
+
 def update_all_channels_for_channel_type(channel_type):
     """
     Given a channel type, get all channels for this channel type from Thingspeak
-    and update them in the DB
+    and update them in the DB based on Thingspeak's latest data
     """
-    all_channels = get_all_channels_cached()
-    channels_for_type = []
-    for channel_data in all_channels:
-        channel_name = channel_data['name']
-        channel_id = channel_data['id']
-        channel_tags = channel_data['tags']
-
-        # ignore channels of different type
-        tag_found = False
-        for tag in channel_tags:
-            if tag['name'] == channel_type.name:
-                tag_found = True
-                break
-        if not tag_found:
-            continue
-
-        # ignore inactive channels
-        if INACTIVE_MONITOR_KEYWORD in channel_name:
-            continue
-
-        channel, _ = Channel.objects.get_or_create(channel_id=channel_id)
-
-        update_fields = []
-        # Update that channel with its latest data
-        if channel.name != channel_name:
-            channel.name = channel_name
-            update_fields.append('name')
-
-        if not channel.channel_type or channel.channel_type is not channel_type:
-            channel.channel_type = channel_type
-            update_fields.append('channel_type')
-
-        if not channel.is_active:
-            channel.is_active = True
-            update_fields.append('is_active')
-
-        if update_fields:
-            channel.save(update_fields=update_fields)
-
-        channels_for_type.append(channel)
-
-    return channels_for_type
+    all_channel_data = get_all_channels_by_type(channel_type)
+    for channel_data in all_channel_data:
+        channel, _ = Channel.objects.get_or_create(channel_id=channel_data['channel_id'])
+        _update_db_channel_table(channel, channel_type, channel_data)
 
 
 def update_all_channel_data():
