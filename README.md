@@ -31,6 +31,12 @@ For more information about using Python on Heroku, see these Dev Center articles
 
 ## Running Tests
 
+To run all tests in the whole app
+```sh
+$ ./manage.py test --pattern="test_*.py"
+```
+
+To run tests from one folder
 ```sh
 $ ./manage.py test airqo_monitor/tests
 ```
