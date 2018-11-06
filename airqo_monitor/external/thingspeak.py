@@ -73,12 +73,11 @@ def get_all_channels():
 
 
 def get_all_channels_cached():
-    return get_all_channels()
-    # cached_value = cache.get('get-all-channels')
-    # if cached_value is None:
-    #     cached_value = get_all_channels()
-    #     cache.set('get-all-channels', cached_value, timeout=30 * 60)
-    # return cached_value
+    cached_value = cache.get('get-all-channels')
+    if cached_value is None:
+        cached_value = get_all_channels()
+        cache.set('get-all-channels', cached_value, timeout=30 * 60)
+    return cached_value
 
 
 def make_post_call(url):
