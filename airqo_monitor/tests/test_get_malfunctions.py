@@ -146,3 +146,6 @@ class TestGetMalfunctions(TestCase):
 
         incident = Incident.objects.get(id=incident.id)
         assert incident.resolved_at is not None
+
+    def test_test(self):
+        assert True
