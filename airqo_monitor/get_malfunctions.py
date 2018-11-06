@@ -35,25 +35,13 @@ def _get_channel_malfunctions(channel_data, channel_type):
         - "reporting_outliers": The sensor is reporting readings that are outside a reasonable range.
         - "no_data": The channel_data list was empty.
     """
-    malfunction_list = []
+    malfunction_detector = MalfunctionDetector()
     if channel_type == AIRQO_CHANNEL_TYPE:
         malfunction_detector = AirqoMalfunctionDetector()
     elif channel_type == SOIL_CHANNEL_TYPE:
         malfunction_detector = SoilMalfunctionDetector()
-    else:
-        malfunction_detector = MalfunctionDetector()
 
-    if malfunction_detector._has_no_data(channel_data):
-        malfunction_list.append("no_data")
-    else:
-        if malfunction_detector._has_low_battery(channel_data):
-            malfunction_list.append("low_battery_voltage")
-        if malfunction_detector._has_low_reporting_frequency(channel_data):
-            malfunction_list.append("low_reporting_frequency")
-        if malfunction_detector._sensor_is_reporting_outliers(channel_data):
-            malfunction_list.append("reporting_outliers")
-
-    return malfunction_list
+    return malfunction_detector.get_malfunctions(channel_data)
 
 
 def update_db(channels):
