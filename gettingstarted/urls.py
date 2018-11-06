@@ -22,4 +22,6 @@ urlpatterns = [
     path("channels/<int:channel_id>/", airqo_monitor.views.channel_detail, name="channel_detail"),
     path("channel_notes/", airqo_monitor.views.channel_notes, name="channel_note"),
     path("update_incidents/", airqo_monitor.views.update_incidents, name='update_incidents'),
+    path("channel_types/", airqo_monitor.views.channel_types_list, name='all_channels_list'),
+    path("channel_types/<str:channel_type>/", airqo_monitor.views.channel_type_channels_list, name='channels_list'),
 ]

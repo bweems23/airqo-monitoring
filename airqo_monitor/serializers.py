@@ -4,9 +4,22 @@ from rest_framework import serializers
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
+    ChannelType,
     Incident,
     MalfunctionReason,
 )
+
+
+class ChannelTypeSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(max_length=100)
+    friendly_name = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = ChannelType
+        fields = (
+            'name',
+            'friendly_name',
+        )
 
 
 class MalfunctionReasonSerializer(serializers.ModelSerializer):
