@@ -17,6 +17,9 @@ class ChannelType(models.Model):
     data_format_json = models.TextField(null=False)  ## in json
     description = models.TextField(null=True)
 
+    def __str__(self):
+        return self.friendly_name
+
     @property
     def data_format(self):
         return json.loads(self.data_format_json)
