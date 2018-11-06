@@ -1,9 +1,11 @@
+import json
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
 
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
+    ChannelType,
     Incident,
     MalfunctionReason,
 )
@@ -36,9 +38,11 @@ class TestMalfunctionReasonModel(TestCase):
 
 class TestChannelNote(TestCase):
     def setUp(self):
+        self.channel_type, _ = ChannelType.objects.get_or_create(name='airqo', data_format_json=json.dumps({}))
         self.channel = Channel.objects.create(
             channel_id=111,
             name='Channel',
+            channel_type=self.channel_type,
         )
 
     def test_create_channel_note(self):

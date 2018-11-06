@@ -68,6 +68,12 @@ class TestGetMalfunctions(unittest.TestCase):
         ),
     ]
 
+    channel_type, _ = ChannelType.objects.get_or_create(
+        name='soil',
+        friendly_name='Soil',
+        data_format_json=json.dumps({"field1": "pm_1","field2": "pm_2_5","field3": "pm_10","field4": "sample_period","field5": "latitude","field6": "longitude","field7": "battery_voltage","field8": "lat,lng,elevation,speed,num_satellites,hdop"})
+    )
+
     @mock.patch('airqo_monitor.get_malfunctions._sensor_is_reporting_outliers')
     @mock.patch('airqo_monitor.get_malfunctions._has_low_battery')
     @mock.patch('airqo_monitor.get_malfunctions._has_low_reporting_frequency')
@@ -125,12 +131,7 @@ class TestGetMalfunctions(unittest.TestCase):
     @mock.patch('airqo_monitor.get_malfunctions.get_and_format_data_for_all_channels')
     def test_get_all_channel_malfunctions(self, get_and_format_data_for_all_channels_mocker, _get_channel_malfunctions_mocker, update_db_mocker):
         update_db_mocker.return_value = None
-        channel_type = ChannelType.objects.create(
-            name='soil',
-            friendly_name='Soil',
-            data_format_json=json.dumps({"field1": "pm_1","field2": "pm_2_5","field3": "pm_10","field4": "sample_period","field5": "latitude","field6": "longitude","field7": "battery_voltage","field8": "lat,lng,elevation,speed,num_satellites,hdop"})
-        )
-        channel1 = Channel.objects.create(channel_id=5555, name='channel5555', channel_type=channel_type)
+        channel1 = Channel.objects.create(channel_id=5555, name='channel5555', channel_type=self.channel_type)
         get_and_format_data_for_all_channels_mocker.return_value =  {
             5555: {'channel': channel1, 'data': self.sample_channel_data}
         }
@@ -146,7 +147,7 @@ class TestGetMalfunctions(unittest.TestCase):
 
     def test_update_db_creates_incidents(self):
         reason = MalfunctionReason.objects.create(name='reason', description='Reason')
-        channel = Channel.objects.create(channel_id='111', name='Test Channel')
+        channel = Channel.objects.create(channel_id='111', name='Test Channel', channel_type=self.channel_type)
 
         channels = [
             {
@@ -163,7 +164,7 @@ class TestGetMalfunctions(unittest.TestCase):
 
     def test_update_db_resolves_incidents(self):
         reason = MalfunctionReason.objects.create(name='reason', description='Reason')
-        channel = Channel.objects.create(channel_id='1234', name='Test Channel')
+        channel = Channel.objects.create(channel_id='1234', name='Test Channel', channel_type=self.channel_type)
         incident = Incident.objects.create(channel=channel, malfunction_reason=reason)
 
         channels = [

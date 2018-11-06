@@ -69,6 +69,9 @@ class TestFormatData(unittest.TestCase):
         'field8': 'lat,lng,elevation,speed,num_satellites,hdop'
     }
 
+    def setUp(self):
+        self.channel_type = ChannelType.objects.get_or_create(name='airqo', data_format_json=json.dumps(self.sample_data_format))
+
     @mock.patch('airqo_monitor.format_data.get_data_for_channel')
     def test_get_and_format_data_for_channel(self, get_data_for_channel_mocker):
         get_data_for_channel_mocker.return_value = self.sample_json_entries
@@ -134,11 +137,9 @@ class TestFormatData(unittest.TestCase):
     @mock.patch('airqo_monitor.format_data.get_and_format_data_for_channel')
     @mock.patch('airqo_monitor.format_data.get_all_channels_by_type')
     def test_get_and_format_data_for_all_channels(self, get_all_channels_mocker, get_and_format_data_for_channel_mocker):
-        channel_type = ChannelType.objects.create(name='airqo', data_format_json=json.dumps(self.sample_data_format))
-
         get_all_channels_mocker.return_value = [
-            dict(name='channel1', channel_id=9999, tags=[{'name': 'airqo'}]),
-            dict(name='channel2', channel_id=8888, tags=[{'name': 'airqo'}]),
+            dict(name='channel1', id=9999),
+            dict(name='channel2', id=8888),
         ]
 
         entry = {'entry_id': 1, 'latitude': '1', 'longitude': '1'}
@@ -151,10 +152,10 @@ class TestFormatData(unittest.TestCase):
         channel2 = Channel.objects.get(name='channel2')
 
         assert channel1.channel_id == 9999
-        assert channel1.channel_type == channel_type
+        assert channel1.channel_type is not None
 
         assert channel2.channel_id == 8888
-        assert channel2.channel_type == channel_type
+        assert channel2.channel_type is not None
 
         assert len(channel_info[9999]['data']) == 1
         assert channel_info[9999]['data'][0].get('entry_id') == 1
