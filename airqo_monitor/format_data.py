@@ -29,8 +29,8 @@ def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
 
     for entry in data:
         entry_data = dict()
-        for key, value in data_format.items():
-            entry_data[value] = entry.get(key, None)
+        for thingspeak_fieldname, descriptive_name in data_format.items():
+            entry_data[descriptive_name] = entry.get(thingspeak_fieldname, None)
         entry_data['type'] = channel_type_name
         entry_data['entry_id'] = entry['entry_id']
         entry_data['channel_id'] = channel_id

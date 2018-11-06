@@ -33,6 +33,8 @@ def _get_channel_malfunctions(channel_data, channel_type):
     if len(channel_data) == 0:
         malfunction_list.append("no_data")
     else:
+        # TODO(Rachel) - refactor malfunctiond detecting logic to have
+        # fewer individual if cases.
         if _has_low_battery(channel_data, channel_type):
             malfunction_list.append("low_battery_voltage")
         if _has_low_reporting_frequency(channel_data, channel_type):
