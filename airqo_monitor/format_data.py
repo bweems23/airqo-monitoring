@@ -72,9 +72,9 @@ def update_all_channels_for_channel_type(channel_type):
     Given a channel type, get all channels for this channel type from Thingspeak
     and update them in the DB based on Thingspeak's latest data
     """
-    all_channel_data = get_all_channels_by_type(channel_type)
+    all_channel_data = get_all_channels_by_type(channel_type.name)
     for channel_data in all_channel_data:
-        channel, _ = Channel.objects.get_or_create(channel_id=channel_data['id'])
+        channel, _ = Channel.objects.get_or_create(channel_id=channel_data['id'], channel_type=channel_type)
         _update_db_channel_table(channel, channel_type, channel_data)
 
 

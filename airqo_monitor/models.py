@@ -51,6 +51,7 @@ class Channel(models.Model):
         null=False,
         db_index=True,
         on_delete=models.DO_NOTHING,
+        db_constraint=False,
     )
 
     def __str__(self):

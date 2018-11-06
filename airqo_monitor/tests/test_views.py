@@ -1,3 +1,4 @@
+import json
 import collections
 import mock
 
@@ -8,6 +9,7 @@ from django.test import TestCase
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
+    ChannelType,
     Incident,
     MalfunctionReason,
 )
@@ -19,7 +21,8 @@ from airqo_monitor.views import (
 
 class TestChannelDetailView(TestCase):
     def setUp(self):
-        self.channel = Channel.objects.create(channel_id=1, name='Test Name')
+        self.channel_type, _ = ChannelType.objects.get_or_create(name='airqo', data_format_json=json.dumps({}))
+        self.channel = Channel.objects.create(channel_id=1, name='Test Name', channel_type=self.channel_type)
         self.malfunction_reason = MalfunctionReason.objects.create(name="Test Reason", description="test")
 
     @mock.patch('airqo_monitor.views.render')
