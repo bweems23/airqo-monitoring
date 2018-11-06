@@ -3,10 +3,10 @@ This Repo used Heroku's getting started guide as a starting point for a simple D
 ## Running Locally
 
 ```sh
-$ heroku local
+$ python manage.py runserver
 ```
 
-Your app should now be running on [localhost:5000](http://localhost:5000/).
+Your app should now be running on [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
 ## Deploying to Heroku
 
