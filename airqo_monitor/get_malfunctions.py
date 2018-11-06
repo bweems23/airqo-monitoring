@@ -16,6 +16,11 @@ from airqo_monitor.constants import (
     NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION,
     MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS,
 )
+from airqo_monitor.malfunction_detection import (
+    AirqoMalfunctionDetector,
+    SoilMalfunctionDetector,
+    MalfunctionDetector,
+)
 from airqo_monitor.utils import update_last_channel_update_time
 
 cache = SimpleCache()
@@ -31,16 +36,21 @@ def _get_channel_malfunctions(channel_data, channel_type):
         - "no_data": The channel_data list was empty.
     """
     malfunction_list = []
-    if len(channel_data) == 0:
+    if channel_type == AIRQO_CHANNEL_TYPE:
+        malfunction_detector = AirqoMalfunctionDetector()
+    elif channel_type == SOIL_CHANNEL_TYPE:
+        malfunction_detector = SoilMalfunctionDetector()
+    else:
+        malfunction_detector = MalfunctionDetector()
+
+    if malfunction_detector._has_no_data(channel_data):
         malfunction_list.append("no_data")
     else:
-        # TODO(Rachel) - refactor malfunctiond detecting logic to have
-        # fewer individual if cases.
-        if _has_low_battery(channel_data, channel_type):
+        if malfunction_detector._has_low_battery(channel_data):
             malfunction_list.append("low_battery_voltage")
-        if _has_low_reporting_frequency(channel_data, channel_type):
+        if malfunction_detector._has_low_reporting_frequency(channel_data):
             malfunction_list.append("low_reporting_frequency")
-        if _sensor_is_reporting_outliers(channel_data, channel_type):
+        if malfunction_detector._sensor_is_reporting_outliers(channel_data):
             malfunction_list.append("reporting_outliers")
 
     return malfunction_list
