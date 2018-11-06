@@ -1,8 +1,13 @@
+from datetime import datetime
+
+from airqo_monitor.constants import LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
+    GlobalVariable,
     Incident,
 )
+
 
 def get_channel_history(channel):
     """
@@ -16,6 +21,7 @@ def get_channel_history(channel):
 
     return history
 
+
 def create_channel_note(channel_id, author, note):
     channel = Channel.objects.get(channel_id=channel_id)
 
@@ -26,3 +32,9 @@ def create_channel_note(channel_id, author, note):
     )
 
     return note
+
+
+def update_last_channel_update_time():
+    variable = GlobalVariable.objects.get(key=LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME)
+    variable.value = datetime.strftime(datetime.now(),'%Y-%m-%dT%H:%M:%SZ')
+    variable.save()

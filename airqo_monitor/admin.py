@@ -4,6 +4,7 @@ from airqo_monitor.models import (
 	Channel,
 	ChannelNote,
 	ChannelType,
+	GlobalVariable,
 	Incident,
 	MalfunctionReason,
 )
@@ -12,5 +13,6 @@ from airqo_monitor.models import (
 admin.site.register(Channel)
 admin.site.register(ChannelNote)
 admin.site.register(ChannelType)
+admin.site.register(GlobalVariable)
 admin.site.register(Incident)
 admin.site.register(MalfunctionReason)
