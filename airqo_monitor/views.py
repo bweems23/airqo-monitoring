@@ -1,8 +1,9 @@
+from datetime import datetime
 from django.shortcuts import redirect, render
 from django.http import Http404, HttpResponse
 
+from airqo_monitor.constants import LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME
 from airqo_monitor.models import Incident
-
 from airqo_monitor.get_malfunctions import (
     get_all_channel_malfunctions
 )
@@ -10,6 +11,7 @@ from airqo_monitor.models import (
     Channel,
     ChannelNote,
     ChannelType,
+    GlobalVariable,
     Incident,
 )
 from airqo_monitor.serializers import (
@@ -25,12 +27,15 @@ from airqo_monitor.utils import (
 )
 
 def index(request):
+    last_update = GlobalVariable.objects.get(key=LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME)
+    last_update_datetime = datetime.strptime(last_update.value,'%Y-%m-%dT%H:%M:%SZ')
     return render(
         request,
         "index.html",
         context={
             "channels": ChannelSerializer(Channel.objects.filter(is_active=True), many=True).data,
             "all_channel_types": ChannelTypeSerializer(ChannelType.objects.all(), many=True).data,
+            "last_update_time": datetime.strftime(last_update_datetime,'%d/%m/%Y at %H:%M')
         },
     )
 
