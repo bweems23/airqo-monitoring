@@ -142,3 +142,16 @@ class ChannelNote(models.Model):
     def local_created_at(self):
         local_tz = pytz.timezone(PYTZ_KAMPALA_STRING)
         return self.created_at.astimezone(local_tz)
+
+
+class GlobalVariable(models.Model):
+
+    class Meta:
+        db_table = 'global_variable'
+
+    created_at = models.DateTimeField("date created", auto_now_add=True)
+    key = models.TextField(null=False, unique=True)
+    value = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.key
