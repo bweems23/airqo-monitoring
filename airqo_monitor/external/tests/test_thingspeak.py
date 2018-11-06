@@ -1,7 +1,7 @@
 import mock
-import unittest
 
 from datetime import datetime, timedelta
+from django.test import TestCase
 
 from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
@@ -15,7 +15,7 @@ from airqo_monitor.external.thingspeak import (
 )
 
 
-class TestThingspeakAPI(unittest.TestCase):
+class TestThingspeakAPI(TestCase):
 
     sample_feeds_list_response = {
         'channel': [],

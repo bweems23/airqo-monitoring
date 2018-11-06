@@ -1,9 +1,9 @@
 import json
 import mock
-import unittest
 
 from bunch import Bunch
 from datetime import datetime, timedelta
+from django.test import TestCase
 
 from airqo_monitor.models import Channel, ChannelType
 from airqo_monitor.constants import (
@@ -20,7 +20,7 @@ from airqo_monitor.format_data import (
 )
 
 
-class TestFormatData(unittest.TestCase):
+class TestFormatData(TestCase):
 
     sample_json_entries = [
         {
@@ -70,7 +70,7 @@ class TestFormatData(unittest.TestCase):
     }
 
     def setUp(self):
-        self.channel_type = ChannelType.objects.get_or_create(name='airqo', data_format_json=json.dumps(self.sample_data_format))
+        self.channel_type, _ = ChannelType.objects.get_or_create(name='airqo', data_format_json=json.dumps(self.sample_data_format))
 
     @mock.patch('airqo_monitor.format_data.get_data_for_channel')
     def test_get_and_format_data_for_channel(self, get_data_for_channel_mocker):
