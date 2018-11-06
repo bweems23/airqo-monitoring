@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/indexStyle.css"/>
+<h1 style="text-align:center"> All {{ channel_type_name }} channels </h1>
+
+
+<div class="filter_wrapper">
+	<strong>Filter by Channel Type:</strong>
+	{% for channel_type in all_channel_types %}
+	    <a class="filter_button" href="/channel_types/{{ channel_type.name }}">{{ channel_type.friendly_name }}</a>
+	{% endfor %}
+	<a class="filter_button" href="/channel_types">Show All</a>
+</div>
+
+<br/><br/>
+
+<div class="wrapper">
+	{% for channel_type in channel_types %}
+        <a href="/channel_types/{{ channel_type.name }}/">{{ channel_type.friendly_name }}</a>
+    {% endfor %}
+    {% for channel in channels %}
+        <div class="{% if channel.active_incidents %} malfunctioning_block {% else %} functioning_block {% endif %};">
+            <p style="text-align:center">
+                <a href="/channels/{{ channel.channel_id }}"><strong>{{ channel.name }}</strong></a>
+            </p>
+            <div style="margin-left:5px;">
+                {% if channel.active_incidents %}
+                    <ul style="margin-bottom:0px;">
+                        <li>
+                            {% for incident in channel.active_incidents %}
+                                <p> {{ incident.malfunction_reason.description }} </p>
+                            {% endfor %}
+                        </li>
+                    </ul>
+            {% else %}
+                <p style="text-align:center">Reports look normal.</p>
+            {% endif %}
+        </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
