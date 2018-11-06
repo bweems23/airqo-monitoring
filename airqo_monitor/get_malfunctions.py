@@ -68,9 +68,6 @@ def _has_low_reporting_frequency(channel_data, channel_type):
         # between each point being reported.
         return report_timestamp < cutoff_time
 
-    elif channel_type == SOIL_CHANNEL_TYPE:
-        return True
-
 
 def _sensor_is_reporting_outliers(channel_data, channel_type):
     """Determine whether the sensor is reporting points outside the reasonable range.
