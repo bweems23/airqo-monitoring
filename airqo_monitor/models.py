@@ -48,7 +48,7 @@ class Channel(models.Model):
     is_active = models.BooleanField(default=True)
     channel_type = models.ForeignKey(
         ChannelType,
-        null=True,
+        null=False,
         db_index=True,
         on_delete=models.DO_NOTHING,
     )
