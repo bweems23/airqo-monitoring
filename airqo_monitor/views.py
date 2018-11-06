@@ -9,12 +9,14 @@ from airqo_monitor.get_malfunctions import (
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
+    ChannelType,
     Incident,
 )
 from airqo_monitor.serializers import (
     ChannelHistorySerializer,
     ChannelSerializer,
     ChannelNoteSerializer,
+    ChannelTypeSerializer,
     IncidentSerializer,
 )
 from airqo_monitor.utils import (
@@ -26,7 +28,10 @@ def index(request):
     return render(
         request,
         "index.html",
-        context={"channels": ChannelSerializer(Channel.objects.filter(is_active=True), many=True).data},
+        context={
+            "channels": ChannelSerializer(Channel.objects.filter(is_active=True), many=True).data,
+            "all_channel_types": ChannelTypeSerializer(ChannelType.objects.all(), many=True).data,
+        },
     )
 
 
@@ -54,6 +59,42 @@ def channel_detail(request, channel_id):
             "channel": ChannelSerializer(channel).data,
             "history": ChannelHistorySerializer(history, many=True).data,
         },
+    )
+
+
+def channel_types_list(request):
+    channels = Channel.objects.filter(is_active=True)
+
+    return render(
+        request,
+        "channels_list.html",
+        context={
+            "channels": ChannelSerializer(channels, many=True).data,
+            "all_channel_types": ChannelTypeSerializer(ChannelType.objects.all(), many=True).data,
+            "channel_type_name": "",
+        }
+    )
+
+
+def channel_type_channels_list(request, channel_type):
+    try:
+        channel_type = ChannelType.objects.get(name=channel_type)
+        channels = Channel.objects.filter(channel_type=channel_type, is_active=True)
+    except ChannelType.DoesNotExist:
+        raise Http404("Cannot find channel type {}. Possible types are: {}".format(
+                channel_type,
+                ChannelType.objects.all(),
+            )
+        )
+
+    return render(
+        request,
+        "channels_list.html",
+        context={
+            "channels": ChannelSerializer(channels, many=True).data,
+            "all_channel_types": ChannelTypeSerializer(ChannelType.objects.all(), many=True).data,
+            "channel_type_name": channel_type,
+        }
     )
 
 
