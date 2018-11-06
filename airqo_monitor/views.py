@@ -1,8 +1,13 @@
+import pytz
+
 from datetime import datetime
 from django.shortcuts import redirect, render
 from django.http import Http404, HttpResponse
 
-from airqo_monitor.constants import LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME
+from airqo_monitor.constants import (
+    PYTZ_KAMPALA_STRING,
+    LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME,
+)
 from airqo_monitor.models import Incident
 from airqo_monitor.get_malfunctions import (
     get_all_channel_malfunctions
@@ -27,8 +32,9 @@ from airqo_monitor.utils import (
 )
 
 def index(request):
+    local_tz = pytz.timezone(PYTZ_KAMPALA_STRING)
     last_update = GlobalVariable.objects.get(key=LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME)
-    last_update_datetime = datetime.strptime(last_update.value,'%Y-%m-%dT%H:%M:%SZ')
+    last_update_datetime = datetime.strptime(last_update.value,'%Y-%m-%dT%H:%M:%SZ').astimezone(local_tz)
     return render(
         request,
         "index.html",
