@@ -7,6 +7,7 @@ from django.test import TestCase
 from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
+    LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME,
     LOW_BATTERY_CUTOFF,
     SENSOR_PM_2_5_MIN_CUTOFF,
     SENSOR_PM_2_5_MAX_CUTOFF,
@@ -23,6 +24,7 @@ from airqo_monitor.get_malfunctions import (
 from airqo_monitor.models import (
     Channel,
     ChannelType,
+    GlobalVariable,
     Incident,
     MalfunctionReason,
 )
@@ -74,6 +76,7 @@ class TestGetMalfunctions(TestCase):
             friendly_name='Soil',
             data_format_json=json.dumps({"field1": "pm_1","field2": "pm_2_5","field3": "pm_10","field4": "sample_period","field5": "latitude","field6": "longitude","field7": "battery_voltage","field8": "lat,lng,elevation,speed,num_satellites,hdop"})
         )
+        GlobalVariable.objects.create(key=LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME)
 
     @mock.patch('airqo_monitor.get_malfunctions._sensor_is_reporting_outliers')
     @mock.patch('airqo_monitor.get_malfunctions._has_low_battery')

@@ -6,16 +6,19 @@ from datetime import datetime
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, RequestFactory
 
+from airqo_monitor.constants import LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
     ChannelType,
+    GlobalVariable,
     Incident,
     MalfunctionReason,
 )
 from airqo_monitor.utils import (
     create_channel_note,
     get_channel_history,
+    update_last_channel_update_time,
 )
 
 
@@ -24,6 +27,7 @@ class TestUtils(TestCase):
         self.channel_type, _ = ChannelType.objects.get_or_create(name='airqo', data_format_json=json.dumps({}))
         self.channel = Channel.objects.create(channel_id=1, name='Test Name', channel_type=self.channel_type)
         self.malfunction_reason = MalfunctionReason.objects.create(name="Test Reason", description="test")
+        self.variable = GlobalVariable.objects.create(key=LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME)
 
     def test_get_channel_history(self):
         note1 = ChannelNote.objects.create(
@@ -59,3 +63,9 @@ class TestUtils(TestCase):
         assert note.note == 'note'
         assert note.author == 'Rachel'
         assert note.channel == self.channel
+
+    def test_update_last_channel_update_time(self):
+        assert self.variable.value is None
+        update_last_channel_update_time()
+        variable = GlobalVariable.objects.get(id=self.variable.id)
+        assert variable.value is not None

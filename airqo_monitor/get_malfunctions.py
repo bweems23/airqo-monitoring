@@ -16,6 +16,7 @@ from airqo_monitor.constants import (
     NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION,
     MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS,
 )
+from airqo_monitor.utils import update_last_channel_update_time
 
 cache = SimpleCache()
 
@@ -108,6 +109,8 @@ def update_db(channels):
                 # Create the incident and connect it to a reason.
                 malfunction_reason = MalfunctionReason.objects.filter(name=malfunction_reason_name).first()
                 incident = Incident.objects.create(channel=channel_object, malfunction_reason=malfunction_reason)
+
+    update_last_channel_update_time()
 
 
 def get_all_channel_malfunctions():
