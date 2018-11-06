@@ -97,7 +97,12 @@ def update_all_channels_for_channel_type(channel_type):
         channel_tags = channel_data['tags']
 
         # ignore channels of different type
-        if channel_type.name not in channel_tags:
+        tag_found = False
+        for tag in channel_tags:
+            if tag['name'] == channel_type.name:
+                tag_found = True
+                break
+        if not tag_found:
             continue
 
         # ignore inactive channels
@@ -146,6 +151,6 @@ def get_and_format_data_for_all_channels(start_time=None, end_time=None):
     channels = Channel.objects.filter(is_active=True)
     for channel in channels:
         data = get_and_format_data_for_channel(channel, start_time=start_time, end_time=end_time)
-        all_channels_dict[channel] = data
+        all_channels_dict[channel.channel_id] = {'channel': channel, 'data': data}
 
     return all_channels_dict

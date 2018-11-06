@@ -11,6 +11,7 @@ from airqo_monitor.constants import (
     NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION,
     SENSOR_PM_2_5_MIN_CUTOFF,
     SENSOR_PM_2_5_MAX_CUTOFF,
+    SOIL_CHANNEL_TYPE,
     ALLOWABLE_OUTLIER_SENSOR_RATIO,
     NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION,
     MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS,
@@ -53,6 +54,7 @@ def _has_low_battery(channel_data, channel_type):
 def _has_low_reporting_frequency(channel_data, channel_type):
     """Determine whether the channel is reporting data at a lower frequency than expected."""
     assert len(channel_data) > 0
+
     if channel_type == AIRQO_CHANNEL_TYPE:
         index_to_verify = min(len(channel_data), NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION)
         report_to_verify = channel_data[-1 * index_to_verify]
@@ -65,6 +67,11 @@ def _has_low_reporting_frequency(channel_data, channel_type):
         # If the report timestamp is earlier than the cutoff time, that means that there is too much time passing
         # between each point being reported.
         return report_timestamp < cutoff_time
+
+    elif channel_type == SOIL_CHANNEL_TYPE:
+        channel_data.get('sensor_1')
+        channel_data.get('sensor_2')
+        return True
 
 
 def _sensor_is_reporting_outliers(channel_data, channel_type):
@@ -114,12 +121,13 @@ def get_all_channel_malfunctions():
     channels = []
     start_time = datetime.utcnow() - timedelta(days=1)
     all_channels_info = get_and_format_data_for_all_channels(start_time=start_time)
-    for channel, channel_info in all_channels_info.items():
-        possible_malfunctions = _get_channel_malfunctions(channel_info, channel.channel_type)
+    for channel_id, channel_info in all_channels_info.items():
+        channel = channel_info['channel']
+        possible_malfunctions = _get_channel_malfunctions(channel_info['data'], channel.channel_type.name)
         channels.append(
             {
                 "name": channel.name,
-                "channel_id": channel.channel_id,
+                "channel_id": channel_id,
                 "possible_malfunction_reasons": possible_malfunctions,
             }
         )

@@ -137,8 +137,8 @@ class TestFormatData(unittest.TestCase):
         channel_type = ChannelType.objects.create(name='airqo', data_format_json=json.dumps(self.sample_data_format))
 
         get_all_channels_mocker.return_value = [
-            dict(name='channel1', id=9999, tags=['airqo']),
-            dict(name='channel2', id=8888, tags=['airqo']),
+            dict(name='channel1', id=9999, tags=[{'name': 'airqo'}]),
+            dict(name='channel2', id=8888, tags=[{'name': 'airqo'}]),
         ]
 
         entry = {'entry_id': 1, 'latitude': '1', 'longitude': '1'}
@@ -156,12 +156,12 @@ class TestFormatData(unittest.TestCase):
         assert channel2.channel_id == 8888
         assert channel2.channel_type == channel_type
 
-        assert len(channel_info[channel1]) == 1
-        assert channel_info[channel1][0].get('entry_id') == 1
-        assert channel_info[channel1][0].get('latitude') == '1'
-        assert channel_info[channel1][0].get('longitude') == '1'
+        assert len(channel_info[9999]['data']) == 1
+        assert channel_info[9999]['data'][0].get('entry_id') == 1
+        assert channel_info[9999]['data'][0].get('latitude') == '1'
+        assert channel_info[9999]['data'][0].get('longitude') == '1'
 
-        assert len(channel_info[channel2]) == 1
-        assert channel_info[channel2][0].get('entry_id') == 1
-        assert channel_info[channel2][0].get('latitude') == '1'
-        assert channel_info[channel2][0].get('longitude') == '1'
+        assert len(channel_info[8888]['data']) == 1
+        assert channel_info[8888]['data'][0].get('entry_id') == 1
+        assert channel_info[8888]['data'][0].get('latitude') == '1'
+        assert channel_info[8888]['data'][0].get('longitude') == '1'
