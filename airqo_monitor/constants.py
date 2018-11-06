@@ -11,6 +11,8 @@ THINGSPEAK_CHANNELS_LIST_URL = 'https://api.thingspeak.com/channels.json'
 AIR_QUALITY_MONITOR_KEYWORD = 'AIRQO'
 INACTIVE_MONITOR_KEYWORD = 'INACTIVE'
 API_KEY_CONFIG_VAR_NAME = 'CHANNEL_{}_API_KEY'
+AIRQO_CHANNEL_TYPE = 'airqo'
+SOIL_CHANNEL_TYPE = 'soil'
 
 # Constant values used to determine malfunctions.
 LOW_BATTERY_CUTOFF = 3.3

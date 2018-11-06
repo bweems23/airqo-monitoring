@@ -1,8 +1,10 @@
 from airqo_monitor.external.thingspeak import (
-    get_channel_ids_to_names,
+    get_all_channels_by_type,
+    get_all_channels_cached,
     get_data_for_channel,
 )
-from airqo_monitor.models import Channel
+from airqo_monitor.constants import INACTIVE_MONITOR_KEYWORD
+from airqo_monitor.models import Channel, ChannelType
 from airqo_monitor.objects.data_entry import DataEntry
 
 
@@ -13,81 +15,87 @@ def parse_field8_metadata(field8):
     return field8.split(',')
 
 
-def get_and_format_data_for_channel(channel_id, start_time=None, end_time=None):
+def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
     """
     Parses thingspeak json response.
-    Field mapping:
-    field1: pm1
-    field2: pm2.5
-    field3: pm10
-    field4: sample period
-    field5: latitude
-    field6: longtitude
-    field7: battery voltage
-    field8 (optional): lat,lng,elevation,speed,num_satellites,hdop
+    Field mapping depends on the channel type's data format
     """
+    channel_id = channel.channel_id
+    channel_type_name = channel.channel_type.name
+    data_format = channel.channel_type.data_format
+
     data = get_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
-    entry_objects = []
+    formatted_data = []
+
     for entry in data:
-        entry_object = DataEntry(
-            channel_id=channel_id,
-            entry_id=entry['entry_id'],
-        )
-        entry_object.created_at = entry['created_at']
-        entry_object.pm_1 = entry['field1']
-        entry_object.pm_2_5 = entry['field2']
-        entry_object.pm_10 = entry['field3']
-        entry_object.sample_period = entry['field4']
-        entry_object.battery_voltage = entry['field7']
+        entry_data = dict()
+        for thingspeak_fieldname, descriptive_name in data_format.items():
+            entry_data[descriptive_name] = entry.get(thingspeak_fieldname, None)
+        entry_data['type'] = channel_type_name
+        entry_data['entry_id'] = entry['entry_id']
+        entry_data['channel_id'] = channel_id
+        entry_data['created_at'] = entry['created_at']
+        formatted_data.append(entry_data)
 
-        field8 = entry.get('field8', None)
-        if field8:
-            try:
-                lat, lng, altitude, speed, num_satellites, hdop = parse_field8_metadata(field8)
-                entry_object.latitude = lat
-                entry_object.longitude = lng
-                entry_object.altitude = altitude
-                entry_object.speed = speed
-                entry_object.num_satellites = num_satellites
-                entry_object.hdop = hdop
-            except ValueError:
-                # there must have been a misformatted field, fallback to the old
-                # lat and lng fields
-                entry_object.latitude = entry['field5']
-                entry_object.longitude = entry['field6']
-        else:
-            entry_object.latitude = entry['field5']
-            entry_object.longitude = entry['field6']
-
-        # we currently only have stationary devices active
-        entry_object.is_mobile = False
-
-        entry_objects.append(entry_object)
-    return entry_objects
+    return formatted_data
 
 
-def _update_db_channel_table(channel_ids_to_names):
-    for channel_id, channel_info in channel_ids_to_names.items():
-        channel, _ = Channel.objects.get_or_create(channel_id=channel_id)
-        update_fields = []
-        if not channel.is_active:
-            channel.is_active = True
-            update_fields.append('is_active')
-        channel_name = channel_info["name"]
-        if channel.name != channel_name:
-            channel.name = channel_name
-            update_fields.append('name')
+def _update_db_channel_table(channel, channel_type, new_channel_data):
+    channel_name = new_channel_data['name']
+    update_fields = []
 
-        if len(update_fields) > 0:
-            channel.save(update_fields=update_fields)
+    # Update that channel with its latest data
+    if channel.name != channel_name:
+        channel.name = channel_name
+        update_fields.append('name')
+
+    if not channel.channel_type or channel.channel_type is not channel_type:
+        channel.channel_type = channel_type
+        update_fields.append('channel_type')
+
+    # reactivate channel if Thingspeak thinks it's active
+    if not channel.is_active and INACTIVE_MONITOR_KEYWORD not in channel_name:
+        channel.is_active = True
+        update_fields.append('is_active')
+
+    # Deactivate channel if it's no longer active on Thingspeak
+    if channel.is_active and INACTIVE_MONITOR_KEYWORD in channel_name:
+        channel.is_active = False
+        update_fields.append('is_active')
+
+    if update_fields:
+        channel.save(update_fields=update_fields)
+
+
+def update_all_channels_for_channel_type(channel_type):
+    """
+    Given a channel type, get all channels for this channel type from Thingspeak
+    and update them in the DB based on Thingspeak's latest data
+    """
+    all_channel_data = get_all_channels_by_type(channel_type)
+    for channel_data in all_channel_data:
+        channel, _ = Channel.objects.get_or_create(channel_id=channel_data['channel_id'])
+        _update_db_channel_table(channel, channel_type, channel_data)
+
+
+def update_all_channel_data():
+    """
+    Get all channel data from Thingspeak and update in the DB
+    """
+    channel_types = ChannelType.objects.all()
+    for channel_type in channel_types:
+        update_all_channels_for_channel_type(channel_type)
 
 
 def get_and_format_data_for_all_channels(start_time=None, end_time=None):
-    all_channels_dict = get_channel_ids_to_names()
+    # Make sure we have the latest data
+    update_all_channel_data()
 
-    for channel_id in all_channels_dict.keys():
-        data = get_and_format_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
-        all_channels_dict[channel_id]["data"] = data
+    all_channels_dict = dict()
 
-    _update_db_channel_table(all_channels_dict)
+    channels = Channel.objects.filter(is_active=True)
+    for channel in channels:
+        data = get_and_format_data_for_channel(channel, start_time=start_time, end_time=end_time)
+        all_channels_dict[channel.channel_id] = {'channel': channel, 'data': data}
+
     return all_channels_dict

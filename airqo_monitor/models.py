@@ -1,8 +1,36 @@
+import json
 import pytz
 
 from django.db import models
 
 from airqo_monitor.constants import PYTZ_KAMPALA_STRING
+
+
+class ChannelType(models.Model):
+
+    class Meta:
+        db_table = 'channel_type'
+
+    created_at = models.DateTimeField("date created", auto_now_add=True)
+    name = models.TextField(null=False, db_index=True)
+    friendly_name = models.TextField(null=False)
+    data_format_json = models.TextField(null=False)  ## in json
+    description = models.TextField(null=True)
+
+    def __str__(self):
+        return self.friendly_name
+
+    @property
+    def data_format(self):
+        return json.loads(self.data_format_json)
+
+    def save(self, *args, **kwargs):
+        try:
+            self.data_format
+        except TypeError as e:
+            raise ('This field must be in valid JSON: {}'.format(e))
+
+        super(ChannelType, self).save(*args, **kwargs)
 
 
 class Channel(models.Model):
@@ -18,6 +46,12 @@ class Channel(models.Model):
     )
     name = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
+    channel_type = models.ForeignKey(
+        ChannelType,
+        null=True,
+        db_index=True,
+        on_delete=models.DO_NOTHING,
+    )
 
     def __str__(self):
         return '{}: {}'.format(self.channel_id, self.name)

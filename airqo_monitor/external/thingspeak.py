@@ -3,6 +3,7 @@ import os
 
 from collections import defaultdict
 from datetime import datetime, timedelta
+from werkzeug.contrib.cache import SimpleCache
 
 from airqo_monitor.constants import (
     AIR_QUALITY_MONITOR_KEYWORD,
@@ -13,6 +14,9 @@ from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
 )
+
+cache = SimpleCache()
+
 
 def get_api_key_for_channel(channel_id):
     var_name = API_KEY_CONFIG_VAR_NAME.format(str(channel_id))
@@ -61,21 +65,26 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
     return all_data
 
 
-def get_channel_ids_to_names():
-    """
-    Get all relevant channels to this tool (channels with AIRQO and without INACTIVE in the name)
-    """
+def get_all_channels():
     api_key = os.environ.get('THINGSPEAK_USER_API_KEY')
     full_url = '{}/?api_key={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key)
     channels = make_get_call(full_url)
+    return channels
 
-    channel_ids_to_names = defaultdict(dict)
-    for channel in channels:
-        name = channel['name']
-        if AIR_QUALITY_MONITOR_KEYWORD in name and INACTIVE_MONITOR_KEYWORD not in name:
-            channel_ids_to_names[channel['id']]["name"] = name
 
-    return channel_ids_to_names
+def get_all_channels_cached():
+    cached_value = cache.get('get-all-channels')
+    if cached_value is None:
+        cached_value = get_all_channels()
+        cache.set('get-all-channels', cached_value, timeout=30 * 60)
+    return cached_value
+
+
+def get_all_channels_by_type(channel_type):
+    api_key = os.environ.get('THINGSPEAK_USER_API_KEY')
+    full_url = '{}/?api_key={}&tag={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key, channel_type)
+    channels = make_get_call(full_url)
+    return channels
 
 
 def make_post_call(url):
