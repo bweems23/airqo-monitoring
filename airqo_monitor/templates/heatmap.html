@@ -1,3 +1,4 @@
+{% extends "base.html" %}
 {% load static %}
 {% block content %}
 
@@ -40,6 +41,7 @@
     </div>
     <div id="map"></div>
     <script>
+      console.log("XXXXXXX");
 
       const maxI = 200, rad = 21, opac = .6;
 
@@ -56,7 +58,7 @@
       // Heatmap layers also work with a vector tile source.
       map.addSource('earthquakes', {
           "type": "geojson",
-          "data": "https://www.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"
+          "data": {{ geojson_points }}
       });
 
       map.addLayer({
@@ -169,48 +171,48 @@
 
       // This example requires the Visualization library. Include the libraries=visualization
       // parameter when you first load the API. For example:
-      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
-      var map, heatmap;
+      // // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
+      // var map, heatmap;
 
-      function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 13,
-          center: {lat: 0.2976, lng: 32.5825},
-          mapTypeId: 'roadmap'
-        });
+      // function initMap() {
+      //   map = new google.maps.Map(document.getElementById('map'), {
+      //     zoom: 13,
+      //     center: {lat: 0.2976, lng: 32.5825},
+      //     mapTypeId: 'roadmap'
+      //   });
 
-        heatmap = new google.maps.visualization.HeatmapLayer({
-          data: getPoints(),
-          map: map,
-          maxIntensity: maxI,
-          radius: rad,
-          opacity: opac
-        });
-      }
+      //   heatmap = new google.maps.visualization.HeatmapLayer({
+      //     data: getPoints(),
+      //     map: map,
+      //     maxIntensity: maxI,
+      //     radius: rad,
+      //     opacity: opac
+      //   });
+      // }
 
-      function toggleHeatmap() {
-        heatmap.setMap(heatmap.getMap() ? null : map);
-      }
+      // function toggleHeatmap() {
+      //   heatmap.setMap(heatmap.getMap() ? null : map);
+      // }
 
-      function changeGradient() {
-        var gradient = [
-          'rgba(0, 255, 255, 0)',
-          'rgba(0, 255, 255, 1)',
-          'rgba(0, 191, 255, 1)',
-          'rgba(0, 127, 255, 1)',
-          'rgba(0, 63, 255, 1)',
-          'rgba(0, 0, 255, 1)',
-          'rgba(0, 0, 223, 1)',
-          'rgba(0, 0, 191, 1)',
-          'rgba(0, 0, 159, 1)',
-          'rgba(0, 0, 127, 1)',
-          'rgba(63, 0, 91, 1)',
-          'rgba(127, 0, 63, 1)',
-          'rgba(191, 0, 31, 1)',
-          'rgba(255, 0, 0, 1)'
-        ]
-        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
-      }
+      // function changeGradient() {
+      //   var gradient = [
+      //     'rgba(0, 255, 255, 0)',
+      //     'rgba(0, 255, 255, 1)',
+      //     'rgba(0, 191, 255, 1)',
+      //     'rgba(0, 127, 255, 1)',
+      //     'rgba(0, 63, 255, 1)',
+      //     'rgba(0, 0, 255, 1)',
+      //     'rgba(0, 0, 223, 1)',
+      //     'rgba(0, 0, 191, 1)',
+      //     'rgba(0, 0, 159, 1)',
+      //     'rgba(0, 0, 127, 1)',
+      //     'rgba(63, 0, 91, 1)',
+      //     'rgba(127, 0, 63, 1)',
+      //     'rgba(191, 0, 31, 1)',
+      //     'rgba(255, 0, 0, 1)'
+      //   ]
+      //   heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+      // }
 
       // Function to change the radius of data points on heatmap
       // function changeRadius(bool) {
@@ -250,13 +252,13 @@
         // return Math.round(value * multiplier) / multiplier;
       // }
 //
-      // function getPoints() {
-        // var points = {{ points|safe }};
-        // var gmap_points = [];
-        // for (var i = 0; i < points.length; i++) {
-          // gmap_points.push(new google.maps.LatLng(points[i][0], points[i][1]));
-        // }
-        // return gmap_points;
-      // }
+      function generateGeoJSON() {
+        var points = {{ points|safe }};
+        var heatmap_points = [];
+        for (var i = 0; i < points.length; i++) {
+          heatmap_points.push(new google.maps.LatLng(points[i][0], points[i][1]));
+        }
+        return heatmap_points;
+      }
     </script>
 {% endblock %}

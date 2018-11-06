@@ -60,7 +60,9 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
         api_key = get_api_key_for_channel(channel)
         if api_key:
             full_url += '&api_key={}'.format(api_key)
+        print(full_url)
         result = make_post_call(full_url)
+        print("Finished get call.")
 
         # This means we got an empty result set and are done
         if result == -1:
