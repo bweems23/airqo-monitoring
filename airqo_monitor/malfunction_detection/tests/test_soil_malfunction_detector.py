@@ -2,8 +2,9 @@ import mock
 
 from django.test import TestCase
 
-from airqo_monitor.constants import LOW_BATTERY_CUTOFF
 from airqo_monitor.malfunction_detection import SoilMalfunctionDetector
+from airqo_monitor.tests.utils import create_malfunction_global_vars
+from airqo_monitor.utils import get_float_global_var_value
 
 
 class TestSoilMalfunctionDetector(TestCase):
@@ -82,12 +83,13 @@ class TestSoilMalfunctionDetector(TestCase):
         assert not detector._has_no_data(['imdata'])
 
     def test_has_low_battery(self):
+        create_malfunction_global_vars()
         detector = SoilMalfunctionDetector()
 
         assert detector._has_low_battery(self.sample_channel_data) == False
 
         # Set a voltage below the cutoff.
-        self.sample_channel_data[-1]['battery_voltage'] = str(LOW_BATTERY_CUTOFF - 0.1)
+        self.sample_channel_data[-1]['battery_voltage'] = str(get_float_global_var_value('LOW_BATTERY_CUTOFF') - 0.1)
         assert detector._has_low_battery(self.sample_channel_data) == True
 
     def test_sensor_is_reporting_outliers(self):

@@ -9,6 +9,21 @@ from airqo_monitor.models import (
 )
 
 
+def get_int_global_var_value(key):
+    var = GlobalVariable.objects.get(key=key)
+    return int(var.value)
+
+
+def get_float_global_var_value(key):
+    var = GlobalVariable.objects.get(key=key)
+    return float(var.value)
+
+
+def get_str_global_var_value(key):
+    var = GlobalVariable.objects.get(key=key)
+    return var.value
+
+
 def get_channel_history(channel):
     """
     Get an ordered list of all Incidents and Notes for a Channel
