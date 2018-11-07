@@ -7,14 +7,7 @@ from airqo_monitor.models import Incident, Channel, MalfunctionReason
 from airqo_monitor.format_data import get_and_format_data_for_all_channels
 from airqo_monitor.constants import (
     AIRQO_CHANNEL_TYPE,
-    LOW_BATTERY_CUTOFF,
-    NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION,
-    SENSOR_PM_2_5_MIN_CUTOFF,
-    SENSOR_PM_2_5_MAX_CUTOFF,
     SOIL_CHANNEL_TYPE,
-    ALLOWABLE_OUTLIER_SENSOR_RATIO,
-    NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION,
-    MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS,
 )
 from airqo_monitor.malfunction_detection import (
     AirqoMalfunctionDetector,

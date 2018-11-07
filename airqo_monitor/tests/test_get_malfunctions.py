@@ -8,9 +8,6 @@ from airqo_monitor.constants import (
     THINGSPEAK_CHANNELS_LIST_URL,
     THINGSPEAK_FEEDS_LIST_URL,
     LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME,
-    LOW_BATTERY_CUTOFF,
-    SENSOR_PM_2_5_MIN_CUTOFF,
-    SENSOR_PM_2_5_MAX_CUTOFF,
 )
 from airqo_monitor.objects.data_entry import DataEntry
 from airqo_monitor.get_malfunctions import (
@@ -25,6 +22,7 @@ from airqo_monitor.models import (
     Incident,
     MalfunctionReason,
 )
+from airqo_monitor.tests.utils import create_malfunction_global_vars
 
 class TestGetMalfunctions(TestCase):
 

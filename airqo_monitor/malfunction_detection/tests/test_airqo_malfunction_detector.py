@@ -5,10 +5,10 @@ from django.test import TestCase
 
 from airqo_monitor.constants import (
     LOW_BATTERY_CUTOFF,
-    SENSOR_PM_2_5_MAX_CUTOFF,
-    SENSOR_PM_2_5_MIN_CUTOFF,
 )
 from airqo_monitor.malfunction_detection import AirqoMalfunctionDetector
+from airqo_monitor.utils import get_float_global_var_value
+from airqo_monitor.tests.utils import create_malfunction_global_vars
 
 
 class TestAirqoMalfunctionDetector(TestCase):
@@ -100,6 +100,7 @@ class TestAirqoMalfunctionDetector(TestCase):
         assert detector._has_low_battery(self.sample_channel_data) == True
 
     def test_has_low_reporting_frequency(self):
+        create_malfunction_global_vars()
         detector = AirqoMalfunctionDetector()
 
         assert detector._has_low_reporting_frequency(self.sample_channel_data) == True
@@ -114,13 +115,14 @@ class TestAirqoMalfunctionDetector(TestCase):
 
 
     def test_sensor_is_reporting_outliers(self):
+        create_malfunction_global_vars()
         detector = AirqoMalfunctionDetector()
 
         assert detector._sensor_is_reporting_outliers(self.sample_channel_data) == False
 
 
-        self.sample_channel_data[0]['pm_2_5'] = str(SENSOR_PM_2_5_MIN_CUTOFF - 0.1)
+        self.sample_channel_data[0]['pm_2_5'] = str(get_float_global_var_value('SENSOR_PM_2_5_MIN_CUTOFF') - 0.1)
         assert detector._sensor_is_reporting_outliers(self.sample_channel_data) == True
 
-        self.sample_channel_data[0]['pm_2_5'] = str(SENSOR_PM_2_5_MAX_CUTOFF + 0.1)
+        self.sample_channel_data[0]['pm_2_5'] = str(get_float_global_var_value('SENSOR_PM_2_5_MAX_CUTOFF') + 0.1)
         assert detector._sensor_is_reporting_outliers(self.sample_channel_data) == True
