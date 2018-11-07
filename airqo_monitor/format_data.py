@@ -113,19 +113,18 @@ def get_and_format_data_for_all_channels(start_time=None, end_time=None):
 
     return all_channels_dict
 
-def get_and_format_heatmap_data_for_all_channels(channels, start_time=None, end_time=None):
-    print(channels)
-    all_channels_dict = channels
+def get_and_format_heatmap_data_for_all_channels(start_time=None, end_time=None):
+    all_channels_dict = get_and_format_data_for_all_channels(start_time, end_time)
     geojson_data = {"type": "FeatureCollection", "features": []}
 
-    # for channel, data in all_channels_dict[:1]:
-    #     for data_entry in data:
-    #         geojson_data["features"].append({
-    #             "type": "Feature",
-    #             "geometry": {
-    #                 "type": "Point",
-    #                 "coordinates": [data_entry.latitude, data_entry.longitude],
-    #             },
-    #         })
+    for channel_info in all_channels_dict.values():
+        for data_entry in channel_info["data"]:
+            geojson_data["features"].append({
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [data_entry["latitude"], data_entry["longitude"]],
+                },
+            })
 
     return geojson_data
