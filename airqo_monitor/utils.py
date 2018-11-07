@@ -53,4 +53,3 @@ def update_last_channel_update_time():
     variable = GlobalVariable.objects.get(key=LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME)
     variable.value = datetime.strftime(datetime.now(),'%Y-%m-%dT%H:%M:%SZ')
     variable.save()
-
