@@ -41,14 +41,10 @@ class TestChannelDetailView(TestCase):
         assert channel_data['channel_id'] == self.channel.id
         assert channel_data['name'] == self.channel.name
         len(channel_data['active_incidents']) == 1
-        assert channel_data['active_incidents'][0] == collections.OrderedDict(
-            created_at=datetime.strftime(incident.created_at,'%Y-%m-%dT%H:%M:%S.%fZ'),
-            resolved_at=None,
-            malfunction_reason=collections.OrderedDict(
-                name=self.malfunction_reason.name,
-                description=self.malfunction_reason.description,
-            ),
-        )
+        assert channel_data['active_incidents'][0]['created_at'] == datetime.strftime(incident.created_at,'%Y-%m-%dT%H:%M:%S.%fZ')
+        assert channel_data['active_incidents'][0]['resolved_at'] == None
+        assert channel_data['active_incidents'][0]['malfunction_reason']['name'] == self.malfunction_reason.name
+        assert channel_data['active_incidents'][0]['malfunction_reason']['description'] == self.malfunction_reason.description
 
         history_data = call_context['history']
         assert len(history_data) == 1
