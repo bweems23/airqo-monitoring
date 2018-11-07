@@ -5,7 +5,6 @@ from airqo_monitor.constants import (
     LOW_BATTERY_MALFUNCTION_REASON_STR,
     LOW_REPORTING_FREQUENCY_MALFUNCTION_REASON_STR,
     NO_DATA_MALFUNCTION_REASON_STR,
-    NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION,
     REPORTING_OUTLIERS_MALFUNCTION_REASON_STR,
 )
 from airqo_monitor.utils import (
@@ -37,7 +36,7 @@ class AirqoMalfunctionDetector(MalfunctionDetector):
         Presence of outlier points may indicated an obstructed sensor.
         """
         assert len(channel_data) > 0
-        num_points = min(NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION, len(channel_data))
+        num_points = min(get_int_global_var_value('NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION'), len(channel_data))
         is_outlier = lambda pm_2_5: pm_2_5 < get_float_global_var_value('SENSOR_PM_2_5_MIN_CUTOFF') or pm_2_5 > get_float_global_var_value('SENSOR_PM_2_5_MAX_CUTOFF')
         extreme_reads = [entry for entry in channel_data[-1 * num_points:] if is_outlier(float(entry.get('pm_2_5')))]
         return len(extreme_reads) > num_points * get_float_global_var_value('ALLOWABLE_OUTLIER_SENSOR_RATIO')
