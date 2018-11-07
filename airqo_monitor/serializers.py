@@ -129,3 +129,13 @@ class ChannelHistorySerializer(serializers.Serializer):
         if object_type == 'incident':
             reason = obj.malfunction_reason
             return MalfunctionReasonSerializer(reason).data
+
+    class Meta:
+        fields = (
+            'object_type',
+            'created_at',
+            'note',
+            'author',
+            'resolved_at',
+            'malfunction_reason',
+        )
