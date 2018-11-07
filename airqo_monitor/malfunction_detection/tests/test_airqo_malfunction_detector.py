@@ -94,7 +94,7 @@ class TestAirqoMalfunctionDetector(TestCase):
         assert detector._has_low_battery(self.sample_channel_data) == False
 
         # Set a voltage below the cutoff.
-        self.sample_channel_data[-1]['battery_voltage'] = str(get_float_global_var_value('AIRQO_LOW_BATTERY_CUTOFF') - 0.1)
+        self.sample_channel_data[-1]['battery_voltage'] = str(get_float_global_var_value('LOW_BATTERY_CUTOFF') - 0.1)
         assert detector._has_low_battery(self.sample_channel_data) == True
 
     def test_has_low_reporting_frequency(self):

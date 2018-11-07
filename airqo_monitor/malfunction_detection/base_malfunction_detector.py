@@ -27,7 +27,7 @@ class MalfunctionDetector(object):
         """Determine whether the channel has low battery. channel_data can't be empty."""
         assert len(channel_data) > 0
         last_voltage = float(channel_data[-1].get('battery_voltage'))
-        return last_voltage < get_float_global_var_value('AIRQO_LOW_BATTERY_CUTOFF')
+        return last_voltage < get_float_global_var_value('LOW_BATTERY_CUTOFF')
 
     def _has_no_data(self, channel_data):
         return len(channel_data) == 0
