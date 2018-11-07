@@ -2,6 +2,12 @@ This Repo used Heroku's getting started guide as a starting point for a simple D
 
 ## Running Locally
 
+clone the repo and run:
+
+```sh
+$ pip install -r requirements.txt
+```
+
 ```sh
 $ python manage.py runserver
 ```
