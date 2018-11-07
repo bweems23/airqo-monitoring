@@ -12,9 +12,16 @@ class ChannelType(models.Model):
         db_table = 'channel_type'
 
     created_at = models.DateTimeField("date created", auto_now_add=True)
-    name = models.TextField(null=False, db_index=True)
+    name = models.TextField(
+        null=False,
+        db_index=True,
+        help_text="This must match the channel's tag on the Thingspeak"
+    )
     friendly_name = models.TextField(null=False)
-    data_format_json = models.TextField(null=False)  ## in json
+    data_format_json = models.TextField(
+        null=False,
+        help_text='JSON map of the external fields to helpful python fieldnames (e.g. {"field1": "pm_1","field2": "pm_2_5","field3": "pm_10","field4": "sample_period","field5": "latitude","field6": "longitude","field7": "battery_voltage"})'
+    )  ## in json
     description = models.TextField(null=True)
 
     def __str__(self):
