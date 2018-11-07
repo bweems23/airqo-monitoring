@@ -37,12 +37,13 @@ For more information about using Python on Heroku, see these Dev Center articles
 
 ## Running Tests
 
-To run all tests in the whole app
+To run all tests in the whole app:
 ```sh
 $ ./manage.py test --pattern="test_*.py"
 ```
+If you add a new test folder, you'll need to add an empty `__init__.py` file in order for the above command to pick it up.
 
-To run tests from one folder
+To run tests from one folder:
 ```sh
 $ ./manage.py test airqo_monitor/tests
 ```
