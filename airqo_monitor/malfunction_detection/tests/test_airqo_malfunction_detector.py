@@ -4,8 +4,8 @@ from datetime import datetime
 from django.test import TestCase
 
 from airqo_monitor.malfunction_detection import AirqoMalfunctionDetector
-from airqo_monitor.utils import get_float_global_var_value
 from airqo_monitor.tests.utils import create_malfunction_global_vars
+from airqo_monitor.utils import get_float_global_var_value
 
 
 class TestAirqoMalfunctionDetector(TestCase):
