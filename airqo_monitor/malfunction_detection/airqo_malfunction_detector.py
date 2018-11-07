@@ -36,22 +36,22 @@ class AirqoMalfunctionDetector(MalfunctionDetector):
         Presence of outlier points may indicated an obstructed sensor.
         """
         assert len(channel_data) > 0
-        num_points = min(get_int_global_var_value('NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION'), len(channel_data))
-        is_outlier = lambda pm_2_5: pm_2_5 < get_float_global_var_value('SENSOR_PM_2_5_MIN_CUTOFF') or pm_2_5 > get_float_global_var_value('SENSOR_PM_2_5_MAX_CUTOFF')
+        num_points = min(get_int_global_var_value('AIRQO_NUM_REPORTS_TO_VERIFY_SENSOR_MALFUNCTION'), len(channel_data))
+        is_outlier = lambda pm_2_5: pm_2_5 < get_float_global_var_value('AIRQO_SENSOR_PM_2_5_MIN_CUTOFF') or pm_2_5 > get_float_global_var_value('AIRQO_SENSOR_PM_2_5_MAX_CUTOFF')
         extreme_reads = [entry for entry in channel_data[-1 * num_points:] if is_outlier(float(entry.get('pm_2_5')))]
-        return len(extreme_reads) > num_points * get_float_global_var_value('ALLOWABLE_OUTLIER_SENSOR_RATIO')
+        return len(extreme_reads) > num_points * get_float_global_var_value('AIRQO_ALLOWABLE_OUTLIER_SENSOR_RATIO')
 
     def _has_low_reporting_frequency(self, channel_data):
         """Determine whether the channel is reporting data at a lower frequency than expected."""
         assert len(channel_data) > 0
 
-        index_to_verify = min(len(channel_data), get_int_global_var_value('NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION'))
+        index_to_verify = min(len(channel_data), get_int_global_var_value('AIRQO_NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION'))
         report_to_verify = channel_data[-1 * index_to_verify]
         report_timestamp = datetime.strptime(report_to_verify.get('created_at'), '%Y-%m-%dT%H:%M:%SZ')
 
         # The cutoff time is now minus MINIMUM_REPORT_FREQUENCY_SECONDS seconds per report being evaluated.
         # The number of reports being evaluated is determined by the index_to_verify.
-        cutoff_time = datetime.utcnow() - timedelta(seconds=get_int_global_var_value('MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS') * index_to_verify)
+        cutoff_time = datetime.utcnow() - timedelta(seconds=get_int_global_var_value('AIRQO_MAXIMUM_AVERAGE_SECONDS_BETWEEN_REPORTS') * index_to_verify)
 
         # If the report timestamp is earlier than the cutoff time, that means that there is too much time passing
         # between each point being reported.
