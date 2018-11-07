@@ -31,39 +31,33 @@ class TestChannelDetailView(TestCase):
 
         channel_detail({}, self.channel.id)
 
-        render_mocker.assert_called_once_with(
-            {},
-            "channel_detail.html",
-            context={
-                "channel": {
-                    "channel_id": self.channel.id,
-                    "name": self.channel.name,
-                    "active_incidents": [
-                        collections.OrderedDict(
-                            created_at=datetime.strftime(incident.created_at,'%Y-%m-%dT%H:%M:%S.%fZ'),
-                            resolved_at=None,
-                            malfunction_reason=collections.OrderedDict(
-                                name=self.malfunction_reason.name,
-                                description=self.malfunction_reason.description,
-                            ),
-                        )
-                    ]
-                },
-                "history": [
-                    collections.OrderedDict(
-                        object_type='incident',
-                        created_at=datetime.strftime(incident.local_created_at,'%d/%m/%Y at %H:%M'),
-                        note=None,
-                        author=None,
-                        resolved_at=None,
-                        malfunction_reason={
-                            "name": self.malfunction_reason.name,
-                            "description": self.malfunction_reason.description,
-                        }
-                    )
-                ],
-            }
-        )
+        actual_calls = render_mocker.call_args_list
+        assert len(actual_calls) == 1
+        call = actual_calls[0]
+        assert call[0] == ({}, 'channel_detail.html')
+        call_context = call[1]['context']
+
+        channel_data = call_context['channel']
+        assert channel_data['channel_id'] == self.channel.id
+        assert channel_data['name'] == self.channel.name
+        len(channel_data['active_incidents']) == 1
+        assert channel_data['active_incidents'][0]['created_at'] == datetime.strftime(incident.created_at,'%Y-%m-%dT%H:%M:%S.%fZ')
+        assert channel_data['active_incidents'][0]['resolved_at'] == None
+        assert channel_data['active_incidents'][0]['malfunction_reason']['name'] == self.malfunction_reason.name
+        assert channel_data['active_incidents'][0]['malfunction_reason']['description'] == self.malfunction_reason.description
+
+        history_data = call_context['history']
+        assert len(history_data) == 1
+        assert history_data[0]['object_type'] == 'incident'
+        assert history_data[0]['created_at'] == datetime.strftime(incident.local_created_at,'%d/%m/%Y at %H:%M')
+        assert history_data[0]['note'] == None
+        assert history_data[0]['author'] == None
+        assert history_data[0]['resolved_at'] == None
+        assert history_data[0]['malfunction_reason'] == {
+            "name": self.malfunction_reason.name,
+            "description": self.malfunction_reason.description,
+        }
+
 
     @mock.patch('airqo_monitor.views.redirect')
     def test_channel_notes(self, redirect_mocker):
