@@ -26,9 +26,7 @@ def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
     channel_type_name = channel.channel_type.name
     data_format = channel.channel_type.data_format
 
-    print ("Getting data for channel")
     data = get_data_for_channel(channel_id, start_time=start_time, end_time=end_time)
-    print ("Done Getting data for channel")
     formatted_data = []
 
     for entry in data:
@@ -118,13 +116,14 @@ def get_and_format_heatmap_data_for_all_channels(start_time=None, end_time=None)
     geojson_data = {"type": "FeatureCollection", "features": []}
 
     for channel_info in all_channels_dict.values():
-        for data_entry in channel_info["data"]:
-            geojson_data["features"].append({
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [data_entry["latitude"], data_entry["longitude"]],
-                },
-            })
+        if channel_info["channel"].channel_type.name == "airqo":
+            for data_entry in channel_info["data"]:
+                geojson_data["features"].append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [data_entry["latitude"], data_entry["longitude"]],
+                    },
+                })
 
     return geojson_data
