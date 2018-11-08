@@ -1,6 +1,7 @@
 import json
 
 from airqo_monitor.models import (
+    Channel,
     ChannelType,
     GlobalVariable,
     MalfunctionReason,
@@ -8,12 +9,12 @@ from airqo_monitor.models import (
 
 def create_basic_test_data():
     # ChannelType
-    ChannelType.objects.filter(name='airqo').delete()
-    ChannelType.objects.create(
-        name='airqo',
-        friendly_name='Airqo',
-        data_format_json=json.dumps({"field1": "analog_value", "field2": "sensor_voltage_out", "field3": "VWC", "field4": "H20_percent", "field5": "latitude", "field6": "longitude", "field7": "battery_voltage", "field8": "latlonalt"})
-    )
+    if not ChannelType.objects.filter(name='airqo').exists():
+        channel_type = ChannelType.objects.create(
+            name='airqo',
+            friendly_name='Airqo',
+            data_format_json=json.dumps({"field1": "analog_value", "field2": "sensor_voltage_out", "field3": "VWC", "field4": "H20_percent", "field5": "latitude", "field6": "longitude", "field7": "battery_voltage", "field8": "latlonalt"})
+        )
 
     # Malfunction detection variables
     GlobalVariable.objects.get_or_create(key='LAST_CHANNEL_UPDATE_TIME')
