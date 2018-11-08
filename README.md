@@ -2,12 +2,19 @@ This Repo used Heroku's getting started guide as a starting point for a simple D
 
 ## Running Locally
 
-clone the repo and run:
+clone the repo and...
 
+install requirements:
 ```sh
 $ pip install -r requirements.txt
 ```
 
+create basic test data:
+```sh
+$  python manage.py create_test_data
+```
+
+run the server:
 ```sh
 $ python manage.py runserver
 ```
