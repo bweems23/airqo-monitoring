@@ -9,7 +9,7 @@ from airqo_monitor.constants import (
     LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME,
 )
 from airqo_monitor.models import Incident
-from airqo_monitor.get_malfunctions import (
+from airqo_monitor.malfunction_detection.get_malfunctions import (
     get_all_channel_malfunctions
 )
 from airqo_monitor.models import (

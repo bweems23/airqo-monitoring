@@ -1,7 +1,7 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 from django.core.management.base import BaseCommand, CommandError
 
-from airqo_monitor.get_malfunctions import get_all_channel_malfunctions
+from airqo_monitor.malfunction_detection.get_malfunctions import get_all_channel_malfunctions
 
 
 class Command(BaseCommand):

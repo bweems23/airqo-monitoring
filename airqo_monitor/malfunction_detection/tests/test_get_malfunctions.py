@@ -10,7 +10,7 @@ from airqo_monitor.constants import (
     LAST_CHANNEL_UPDATE_TIME_GLOBARLVAR_NAME,
 )
 from airqo_monitor.objects.data_entry import DataEntry
-from airqo_monitor.get_malfunctions import (
+from airqo_monitor.malfunction_detection.get_malfunctions import (
     _get_channel_malfunctions,
     get_all_channel_malfunctions,
     update_db,
@@ -93,9 +93,9 @@ class TestGetMalfunctions(TestCase):
         assert "no_data" in malfunctions
         assert "low_reporting_frequency" not in malfunctions
 
-    @mock.patch('airqo_monitor.get_malfunctions.update_db')
-    @mock.patch('airqo_monitor.get_malfunctions._get_channel_malfunctions')
-    @mock.patch('airqo_monitor.get_malfunctions.get_and_format_data_for_all_channels')
+    @mock.patch('airqo_monitor.malfunction_detection.get_malfunctions.update_db')
+    @mock.patch('airqo_monitor.malfunction_detection.get_malfunctions._get_channel_malfunctions')
+    @mock.patch('airqo_monitor.malfunction_detection.get_malfunctions.get_and_format_data_for_all_channels')
     def test_get_all_channel_malfunctions(self, get_and_format_data_for_all_channels_mocker, _get_channel_malfunctions_mocker, update_db_mocker):
         update_db_mocker.return_value = None
         channel1 = Channel.objects.create(channel_id=5555, name='channel5555', channel_type=self.channel_type)
