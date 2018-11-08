@@ -84,6 +84,12 @@ def get_all_channels_by_type(channel_type):
     api_key = os.environ.get('THINGSPEAK_USER_API_KEY')
     full_url = '{}/?api_key={}&tag={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key, channel_type)
     channels = make_get_call(full_url)
+
+    # For some reason the API returns a list on success and a dict when there's an error
+    status = channels.get('status') if isinstance(channels, dict) else None
+    if status and status != '200':
+        print('[get_all_channels_by_type] Problem reaching Thingspeak API with status: {}'.format(status))
+
     return channels
 
 

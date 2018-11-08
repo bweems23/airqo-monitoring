@@ -6,7 +6,7 @@ from airqo_monitor.management.commands.utils import create_basic_test_data
 
 
 class Command(BaseCommand):
-    help = 'Creates test data necessary for local development. This deletes your existing local data.'
+    help = 'Creates test data necessary for local development'
 
     def handle(self, *args, **options):
         create_basic_test_data()
