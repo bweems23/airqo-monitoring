@@ -1,5 +1,6 @@
 import mock
 
+from datetime import datetime
 from django.test import TestCase
 
 from airqo_monitor.malfunction_detection import SoilMalfunctionDetector
@@ -52,9 +53,13 @@ class TestSoilMalfunctionDetector(TestCase):
 
     @mock.patch('airqo_monitor.malfunction_detection.base_malfunction_detector.MalfunctionDetector._has_no_data')
     @mock.patch('airqo_monitor.malfunction_detection.base_malfunction_detector.MalfunctionDetector._has_low_battery')
-    def test_get_malfunctions_no_malfunctions(self, low_battery_mocker, no_data_mocker):
+    @mock.patch('airqo_monitor.malfunction_detection.soil_malfunction_detector.SoilMalfunctionDetector._sensor_is_reporting_outliers')
+    @mock.patch('airqo_monitor.malfunction_detection.soil_malfunction_detector.SoilMalfunctionDetector._has_low_reporting_frequency')
+    def test_get_malfunctions_no_malfunctions(self, low_frequency_mocker, outliers_mocker, low_battery_mocker, no_data_mocker):
         low_battery_mocker.return_value = False
         no_data_mocker.return_value = False
+        low_frequency_mocker.return_value = False
+        outliers_mocker.return_value = False
 
         detector = SoilMalfunctionDetector()
         assert detector.get_malfunctions(channel_data=[]) == []
@@ -92,10 +97,30 @@ class TestSoilMalfunctionDetector(TestCase):
         self.sample_channel_data[-1]['battery_voltage'] = str(get_float_global_var_value('LOW_BATTERY_CUTOFF') - 0.1)
         assert detector._has_low_battery(self.sample_channel_data) == True
 
+
     def test_sensor_is_reporting_outliers(self):
+        create_malfunction_global_vars()
         detector = SoilMalfunctionDetector()
-        assert not detector._sensor_is_reporting_outliers([])
+
+        assert detector._sensor_is_reporting_outliers(self.sample_channel_data) == False
+
+
+        self.sample_channel_data[0]['pm_2_5'] = str(get_float_global_var_value('SOIL_SENSOR_PM_2_5_MIN_CUTOFF') - 0.1)
+        assert detector._sensor_is_reporting_outliers(self.sample_channel_data) == True
+
+        self.sample_channel_data[0]['pm_2_5'] = str(get_float_global_var_value('SOIL_SENSOR_PM_2_5_MAX_CUTOFF') + 0.1)
+        assert detector._sensor_is_reporting_outliers(self.sample_channel_data) == True
 
     def test_has_low_reporting_frequency(self):
+        create_malfunction_global_vars()
         detector = SoilMalfunctionDetector()
-        assert not detector._has_low_reporting_frequency([])
+
+        assert detector._has_low_reporting_frequency(self.sample_channel_data) == True
+
+        # Make the created_at time stamps now so that they look frequent.
+        now = datetime.utcnow()
+        now_str = now.strftime('%Y-%m-%dT%H:%M:%SZ')
+        self.sample_channel_data[0]['created_at'] = now_str
+        self.sample_channel_data[1]['created_at'] = now_str
+        self.sample_channel_data[2]['created_at'] = now_str
+        assert detector._has_low_reporting_frequency(self.sample_channel_data) == False
