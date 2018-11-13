@@ -7,6 +7,11 @@ from airqo_monitor.constants import (
 from airqo_monitor.utils import get_float_global_var_value
 
 class MalfunctionDetector(object):
+    """
+    All malfunction detectors inherit this base detection class. By default, a new type of
+    channel will use these detection functions unless they are overriden by their own detection
+    class.
+    """
 
     def get_malfunctions(self, channel_data):
         malfunction_list = []

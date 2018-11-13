@@ -26,12 +26,15 @@ class SoilMalfunctionDetector(MalfunctionDetector):
         return malfunction_list
 
     def _sensor_is_reporting_outliers(self, channel_data):
-        """Determine whether the sensor is reporting points outside the reasonable range.
+        """
+        Determine whether the sensor is reporting points outside the reasonable range.
 
         Presence of outlier points may indicated an obstructed sensor.
         """
         return False
 
     def _has_low_reporting_frequency(self, channel_data):
-        """Determine whether the channel is reporting data at a lower frequency than expected."""
+        """
+        Determine whether the channel is reporting data at a lower frequency than expected.
+        """
         return False

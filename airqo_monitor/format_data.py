@@ -17,8 +17,10 @@ def parse_field8_metadata(field8):
 
 def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
     """
-    Parses thingspeak json response.
-    Field mapping depends on the channel type's data format
+    Gets data from Thingspeak and formats the response into understandable names
+    based on the channel type's data format.
+
+    Returns: List of dicts, where each dict is one data entry point
     """
     channel_id = channel.channel_id
     channel_type_name = channel.channel_type.name
@@ -41,6 +43,10 @@ def get_and_format_data_for_channel(channel, start_time=None, end_time=None):
 
 
 def _update_db_channel_table(channel, channel_type, new_channel_data):
+    """
+    Given metadata about a Thingspeak channel, update the corresponding
+    Channel objects in the database
+    """
     channel_name = new_channel_data['name']
     update_fields = []
 
@@ -88,7 +94,12 @@ def update_all_channel_data():
 
 
 def get_and_format_data_for_all_channels(start_time=None, end_time=None):
-    # Make sure we have the latest data
+    """
+    Update the channels from Thingspeak, then get and format data between start_time and end_time
+    for all active channels.
+
+    Returns: dict {thingspeak_channel_id: {'channel': channel_object, 'data': list of entry point dicts}}
+    """
     update_all_channel_data()
 
     all_channels_dict = dict()
