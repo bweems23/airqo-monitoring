@@ -19,12 +19,27 @@ cache = SimpleCache()
 
 
 def get_api_key_for_channel(channel_id):
+    """
+    Get API key for channel from environment variables. They are stored as
+    'CHANNEL_<Thingspeak Channel ID>_API_KEY'.
+
+    Returns: string API key for channel
+    """
     var_name = API_KEY_CONFIG_VAR_NAME.format(str(channel_id))
     api_key = os.environ.get(var_name)
     return api_key
 
 
 def get_data_for_channel(channel, start_time=None, end_time=None):
+    """
+    Get all channel data for a single channel between start_time and end_time. By default,
+    the window goes back 1 week.
+
+    This API returns a maximum of 8000 results, so we keep requesting data until we have fewer
+    that 8000 results returned, or until we get a -1 response from the API (which means that there are no more results)
+
+    Returns: A list of data point dicts, from oldest to newest
+    """
     if not start_time:
         start_time = datetime.now() - timedelta(days=DEFAULT_THINGSPEAK_FEEDS_INTERVAL_DAYS)
     if not end_time:
@@ -66,6 +81,11 @@ def get_data_for_channel(channel, start_time=None, end_time=None):
 
 
 def get_all_channels():
+    """
+    Get all channels from Thingspeak that are associated with our THINGSPEAK_USER_API_KEY
+
+    Returns: List of channel data dicts
+    """
     api_key = os.environ.get('THINGSPEAK_USER_API_KEY')
     full_url = '{}/?api_key={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key)
     channels = make_get_call(full_url)
@@ -73,6 +93,11 @@ def get_all_channels():
 
 
 def get_all_channels_cached():
+    """
+    Wrapper around get_all_channels to allow caching. This data shouldn't change often.
+
+    Returns: List of channel data dicts
+    """
     cached_value = cache.get('get-all-channels')
     if cached_value is None:
         cached_value = get_all_channels()
@@ -81,6 +106,12 @@ def get_all_channels_cached():
 
 
 def get_all_channels_by_type(channel_type):
+    """
+    Get all channels from Thingspeak that are associated with our THINGSPEAK_USER_API_KEY and
+    that have a tag that matches the channel_type param (current types are 'airqo' or 'soil')
+
+    Returns: List of channel data dicts
+    """
     api_key = os.environ.get('THINGSPEAK_USER_API_KEY')
     full_url = '{}/?api_key={}&tag={}'.format(THINGSPEAK_CHANNELS_LIST_URL, api_key, channel_type)
     channels = make_get_call(full_url)
@@ -94,8 +125,18 @@ def get_all_channels_by_type(channel_type):
 
 
 def make_post_call(url):
+    """
+    Make a post call to any URL and parse the json
+
+    Returns: Parsed json response (can be dict or list depending on the expected API response)
+    """
     return json.loads(requests.post(url).content)
 
 
 def make_get_call(url):
+    """
+    Make a get call to any URL and parse the json
+
+    Returns: Parsed json response (can be dict or list depending on the expected API response)
+    """
     return json.loads(requests.get(url).content)

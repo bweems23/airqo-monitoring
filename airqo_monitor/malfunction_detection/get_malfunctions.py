@@ -20,7 +20,8 @@ cache = SimpleCache()
 
 
 def _get_channel_malfunctions(channel_data, channel_type):
-    """Use channel_data to get a list of malfunctions that may be occuring with a channel.
+    """
+    Use channel_data to get a list of malfunctions that may be occuring with a channel.
 
     Returns: a list of potential malfunctions. Potential malfunctions include:
         - "low_battery_voltage": Channel data indicates that the device is running low on battery
@@ -38,6 +39,10 @@ def _get_channel_malfunctions(channel_data, channel_type):
 
 
 def update_db(channels):
+    """
+    Given a list of channels and their active malfunctions, create or resolve Incidents
+    to reflect the current status.
+    """
     for channel in channels:
         channel_object = Channel.objects.filter(channel_id=channel["channel_id"]).first()
 
@@ -89,6 +94,9 @@ def get_all_channel_malfunctions():
 
 
 def get_all_channel_malfunctions_cached():
+    """
+    Cached wrapper around get_all_channel_malfunctions
+    """
     cached_value = cache.get('channel-malfunctions')
     if cached_value is None:
         cached_value = get_all_channel_malfunctions()

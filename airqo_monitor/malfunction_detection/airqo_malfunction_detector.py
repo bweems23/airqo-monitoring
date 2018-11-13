@@ -31,7 +31,8 @@ class AirqoMalfunctionDetector(MalfunctionDetector):
         return malfunction_list
 
     def _sensor_is_reporting_outliers(self, channel_data):
-        """Determine whether the sensor is reporting points outside the reasonable range.
+        """
+        Determine whether the sensor is reporting points outside the reasonable range.
 
         Presence of outlier points may indicated an obstructed sensor.
         """
@@ -42,7 +43,9 @@ class AirqoMalfunctionDetector(MalfunctionDetector):
         return len(extreme_reads) > num_points * get_float_global_var_value('AIRQO_ALLOWABLE_OUTLIER_SENSOR_RATIO')
 
     def _has_low_reporting_frequency(self, channel_data):
-        """Determine whether the channel is reporting data at a lower frequency than expected."""
+        """
+        Determine whether the channel is reporting data at a lower frequency than expected.
+        """
         assert len(channel_data) > 0
 
         index_to_verify = min(len(channel_data), get_int_global_var_value('AIRQO_NUM_REPORTS_TO_VERIFY_REPORTING_MALFUNCTION'))
