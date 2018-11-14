@@ -124,7 +124,7 @@ def get_and_format_heatmap_data_for_all_channels(start_time=None, end_time=None)
                     "type": "Feature",
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [data_entry["latitude"], data_entry["longitude"]],
+                        "coordinates": [data_entry["longitude"], data_entry["latitude"]],
                     },
                 })
 

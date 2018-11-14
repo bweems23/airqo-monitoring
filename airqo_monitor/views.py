@@ -3,6 +3,7 @@ import pytz
 from datetime import datetime
 from django.shortcuts import redirect, render
 from django.http import Http404, HttpResponse
+from django.utils.safestring import mark_safe
 import json as simplejson
 from datetime import datetime, timedelta
 
@@ -136,4 +137,4 @@ def heatmap(request):
     start_time = datetime.utcnow() - timedelta(days=1)
     heatmap_data = get_and_format_heatmap_data_for_all_channels(start_time=start_time)
     heatmap_json = simplejson.dumps(heatmap_data)
-    return render(request, "heatmap.html", context={"geojson_points": heatmap_data})
+    return render(request, "heatmap.html", context={"geojson_points": mark_safe(heatmap_data)})
