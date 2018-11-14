@@ -52,13 +52,14 @@
           center: [-120, 50],
           zoom: 2
       });
+      console.log({{ geojson_points }});
 
       map.on('load', function() {
       // Add a geojson point source.
       // Heatmap layers also work with a vector tile source.
       map.addSource('earthquakes', {
           "type": "geojson",
-          "data": {{ geojson_points }}
+          "data": "https://www.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson",
       });
 
       map.addLayer({
@@ -215,50 +216,51 @@
       // }
 
       // Function to change the radius of data points on heatmap
-      // function changeRadius(bool) {
-        // const step = 3, min = 0, max = 100;
-        // let current = heatmap.get('radius');
-        // let newValue = toggleUpDown(bool, current, step, min, max);
-        // heatmap.set('radius', newValue);
-        // document.getElementById("radiusNum").innerText = newValue;
-      // };
-      // // Function to change the opacity of the heatmap
-      // function changeOpacity(bool) {
-        // const step = .2, min = 0, max = 1;
-        // let current = heatmap.get('opacity');
-        // let newValue = toggleUpDown(bool, current, step, min, max);
-        // let rounded = round(newValue, 1);
-        // heatmap.set('opacity', rounded);
-        // document.getElementById("opacityNum").innerText = rounded;
-      // }
-      // // Function to change maxIntensity of the heatmap
-      // function changeIntensity(bool) {
-        // const step = 25, min = 0, max = 1000;
-        // let current = heatmap.get('maxIntensity');
-        // let newValue = toggleUpDown(bool, current, step, min, max);
-        // heatmap.set('maxIntensity', newValue);
-        // document.getElementById("intensityNum").innerText = newValue;
-      // };
-      // // Changes our toggle values and keeps them within our min/max values
-      // function toggleUpDown(bool, current, step, min, max){
-        // if (bool && current >= max) return current;
-        // if (!bool && current <= min) return current;
-        // if (bool) return current + step;
-        // return current - step;
-      // }
-      // // Used to round the opacity toggle to one decimal place
-      // function round(value, precision) {
-        // var multiplier = Math.pow(10, precision || 0);
-        // return Math.round(value * multiplier) / multiplier;
-      // }
-//
-      function generateGeoJSON() {
-        var points = {{ points|safe }};
-        var heatmap_points = [];
-        for (var i = 0; i < points.length; i++) {
-          heatmap_points.push(new google.maps.LatLng(points[i][0], points[i][1]));
-        }
-        return heatmap_points;
+      function changeRadius(bool) {
+        console.log('xxxxxx');
+        const step = 3, min = 0, max = 100;
+        let current = heatmap.get('radius');
+        let newValue = toggleUpDown(bool, current, step, min, max);
+        heatmap.set('radius', newValue);
+        document.getElementById("radiusNum").innerText = newValue;
+      };
+      // Function to change the opacity of the heatmap
+      function changeOpacity(bool) {
+        const step = .2, min = 0, max = 1;
+        let current = heatmap.get('opacity');
+        let newValue = toggleUpDown(bool, current, step, min, max);
+        let rounded = round(newValue, 1);
+        heatmap.set('opacity', rounded);
+        document.getElementById("opacityNum").innerText = rounded;
       }
+      // Function to change maxIntensity of the heatmap
+      function changeIntensity(bool) {
+        const step = 25, min = 0, max = 1000;
+        let current = heatmap.get('maxIntensity');
+        let newValue = toggleUpDown(bool, current, step, min, max);
+        heatmap.set('maxIntensity', newValue);
+        document.getElementById("intensityNum").innerText = newValue;
+      };
+      // Changes our toggle values and keeps them within our min/max values
+      function toggleUpDown(bool, current, step, min, max){
+        if (bool && current >= max) return current;
+        if (!bool && current <= min) return current;
+        if (bool) return current + step;
+        return current - step;
+      }
+      // Used to round the opacity toggle to one decimal place
+      function round(value, precision) {
+        var multiplier = Math.pow(10, precision || 0);
+        return Math.round(value * multiplier) / multiplier;
+      }
+
+      // function generateGeoJSON() {
+      //   var points = {{ points|safe }};
+      //   var heatmap_points = [];
+      //   for (var i = 0; i < points.length; i++) {
+      //     heatmap_points.push(new google.maps.LatLng(points[i][0], points[i][1]));
+      //   }
+      //   return heatmap_points;
+      // }
     </script>
 {% endblock %}

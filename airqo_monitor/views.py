@@ -134,8 +134,6 @@ def update_incidents(request):
 
 def heatmap(request):
     start_time = datetime.utcnow() - timedelta(days=1)
-    print("GETTING HEATMAP DATA!!!!!!!")
     heatmap_data = get_and_format_heatmap_data_for_all_channels(start_time=start_time)
-    print("GOT HEATMAP DATA!!!!!!!")
     heatmap_json = simplejson.dumps(heatmap_data)
-    return render(request, "heatmap.html") # , context={"points": heatmap_json})
+    return render(request, "heatmap.html", context={"geojson_points": heatmap_data})
