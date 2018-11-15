@@ -3,7 +3,10 @@ from airqo_monitor.external.thingspeak import (
     get_all_channels_cached,
     get_data_for_channel,
 )
-from airqo_monitor.constants import INACTIVE_MONITOR_KEYWORD
+from airqo_monitor.constants import (
+    INACTIVE_MONITOR_KEYWORD,
+    AIRQO_CHANNEL_TYPE,
+)
 from airqo_monitor.models import Channel, ChannelType
 from airqo_monitor.objects.data_entry import DataEntry
 
@@ -116,7 +119,7 @@ def get_and_format_heatmap_data_for_all_channels(start_time=None, end_time=None)
     geojson_data = {"type": "FeatureCollection", "features": []}
 
     for channel_info in all_channels_dict.values():
-        if channel_info["channel"].channel_type.name == "airqo":
+        if channel_info["channel"].channel_type.name == AIRQO_CHANNEL_TYPE:
             for data_entry in channel_info["data"]:
                 geojson_data["features"].append({
                     "type": "Feature",
