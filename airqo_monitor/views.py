@@ -3,6 +3,9 @@ import pytz
 from datetime import datetime
 from django.shortcuts import redirect, render
 from django.http import Http404, HttpResponse
+from django.utils.safestring import mark_safe
+import json as simplejson
+from datetime import datetime, timedelta
 
 from airqo_monitor.constants import (
     PYTZ_KAMPALA_STRING,
@@ -12,6 +15,7 @@ from airqo_monitor.models import Incident
 from airqo_monitor.malfunction_detection.get_malfunctions import (
     get_all_channel_malfunctions
 )
+from airqo_monitor.format_data import get_and_format_heatmap_data_for_all_channels
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
@@ -114,7 +118,7 @@ def channel_notes(request):
         note = request.POST.get('note')
         author = request.POST.get('author')
         channel_id = request.POST.get('channel')
-        
+
         create_channel_note(
             author=author,
             note=note,
@@ -128,3 +132,9 @@ def channel_notes(request):
 def update_incidents(request):
     get_all_channel_malfunctions()
     return redirect('/')
+
+def heatmap(request):
+    start_time = datetime.utcnow() - timedelta(days=1)
+    heatmap_data = get_and_format_heatmap_data_for_all_channels(start_time=start_time)
+    heatmap_json = simplejson.dumps(heatmap_data)
+    return render(request, "heatmap.html", context={"geojson_points": mark_safe(heatmap_data)})
