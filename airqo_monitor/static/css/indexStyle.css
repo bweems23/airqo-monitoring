@@ -6,6 +6,7 @@
 
 .filter_wrapper {
     margin: 20px;
+    text-align: center;
 }
 
 .filter_button {
@@ -16,31 +17,31 @@
     margin: 3px;
 }
 
-.malfunctioning_block {
-    background-color: #ffced3;
-    margin-left: 5px;
+.panel {
     position: relative;
-    margin-bottom: 5px;
+    margin-bottom: 25px;
     float: left;
     height: 100%;
+    width: 100%;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+}
+
+.malfunctioning_block {
+    background-color: #ffced3;
 }
 
 .low_reporting_frequency_block {
     background-color: #ffface;
-    margin-left: 5px;
-    position: relative;
-    margin-bottom: 5px;
-    float: left;
-    height: 100%;
 }
 
 .functioning_block {
     background-color: #d3ffce;
-    margin-left: 5px;
-    position: relative;
-    margin-bottom: 5px;
-    float: left;
-    height: 100%;
+}
+
+.panel-contents {
+    margin: 10px;
 }
 
 .update_data_button {
@@ -84,10 +85,20 @@
     top:1px;
 }
 
-li {
-    display: table-cell;
+.row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+
+.row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
 }
 
 ul {
-    display: table-row;
+    list-style-type:disc;
+    margin-left: -20px;
 }
