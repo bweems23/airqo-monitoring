@@ -9,11 +9,11 @@
       mapboxgl.accessToken = 'pk.eyJ1IjoiYWlycW8iLCJhIjoiY2pvMDIzd3RxMGN2eTNwbXExdjdwb2xidCJ9.sxve698GErIe5KNnLvNhJQ';
       var map = new mapboxgl.Map({
           container: 'map',
-          style: 'mapbox://styles/mapbox/dark-v9',
+          style: 'mapbox://styles/mapbox/basic-v9',
           center: [32.5825, 0.3476],
-          zoom: 10
+          zoom: 11
       });
-       map.on('load', function() {
+      map.on('load', function() {
       // Add a geojson point source.
       map.addSource('sensor-data', {
           "type": "geojson",
@@ -56,27 +56,8 @@
                   9, 10
               ],
           }
-        }, 'waterway-label');
+        });
       });
       map.addControl(new mapboxgl.NavigationControl());
-      
-       // This example requires the Visualization library. Include the libraries=visualization
-      // parameter when you first load the API. For example:
-      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization">
-      var map, heatmap;
-       function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 13,
-          center: {lat: 0.3476, lng: 32.5825},
-          mapTypeId: 'roadmap'
-        });
-         heatmap = new google.maps.visualization.HeatmapLayer({
-          data: getPoints(),
-          map: map,
-          maxIntensity: maxI,
-          radius: rad,
-          opacity: opac
-        });
-      }
     </script>
 {% endblock %}
