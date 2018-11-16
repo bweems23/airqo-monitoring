@@ -7,23 +7,6 @@ html, body {
   margin: 0;
   padding: 0;
 }
-#floating-panel {
-  display: flex;
-  position: absolute;
-  top: 80px;
-  left: 35%;
-  z-index: 5;
-  text-align: center;
-}
-#floating-panel {
-  background-color: #fff;
-  border: 1px solid #999;
-  left: 25%;
-  padding: 5px;
-  position: absolute;
-  top: 80px;
-  z-index: 5;
-}
 .group {
   border: 1px solid #999;
   border-radius: 3px;
