@@ -140,6 +140,7 @@ def update_incidents(request):
 def heatmap(request):
     query_string = request.META.get('QUERY_STRING')
     queries = parse.parse_qs(query_string)
+    local_tz = pytz.timezone(PYTZ_KAMPALA_STRING)
 
     start_time = None
     end_time = None
@@ -147,15 +148,15 @@ def heatmap(request):
 
     start_time_str = queries.get('start_time', None)
     if start_time_str:
-        # TODO: implement parsing the time string
-        pass
+        cleaned_str = start_time_str[0].replace('%3A', ':') + ':00Z'
+        start_time = datetime.strptime(cleaned_str,'%Y-%m-%dT%H:%M:%SZ')
     else:
         start_time = datetime.utcnow() - timedelta(days=1)
 
     end_time_str = queries.get('end_time', None)
     if end_time_str:
-        # TODO: implement parsing the time string
-        pass
+        cleaned_str = end_time_str[0].replace('%3A', ':') + ':00Z'
+        end_time = datetime.strptime(cleaned_str,'%Y-%m-%dT%H:%M:%SZ')
 
     channel_ids_str = queries.get('channel_ids', None)
     if channel_ids_str:
