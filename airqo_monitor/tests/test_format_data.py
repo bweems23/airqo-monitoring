@@ -17,6 +17,7 @@ from airqo_monitor.external.thingspeak import (
 from airqo_monitor.format_data import (
     get_and_format_data_for_all_channels,
     get_and_format_data_for_channel,
+    get_and_format_data_for_channels,
 )
 
 
@@ -146,6 +147,63 @@ class TestFormatData(TestCase):
         get_and_format_data_for_channel_mocker.return_value = [entry]
 
         channel_info = get_and_format_data_for_all_channels()
+        assert len(channel_info) == 2
+
+        channel1 = Channel.objects.get(name='channel1')
+        channel2 = Channel.objects.get(name='channel2')
+
+        assert channel1.channel_id == 9999
+        assert channel1.channel_type is not None
+
+        assert channel2.channel_id == 8888
+        assert channel2.channel_type is not None
+
+        assert len(channel_info[9999]['data']) == 1
+        assert channel_info[9999]['data'][0].get('entry_id') == 1
+        assert channel_info[9999]['data'][0].get('latitude') == '1'
+        assert channel_info[9999]['data'][0].get('longitude') == '1'
+
+        assert len(channel_info[8888]['data']) == 1
+        assert channel_info[8888]['data'][0].get('entry_id') == 1
+        assert channel_info[8888]['data'][0].get('latitude') == '1'
+        assert channel_info[8888]['data'][0].get('longitude') == '1'
+
+    @mock.patch('airqo_monitor.format_data.get_and_format_data_for_channel')
+    @mock.patch('airqo_monitor.format_data.get_all_channels_by_type')
+    def test_get_and_format_heatmap_data_for_channels(self, get_all_channels_mocker, get_and_format_data_for_channel_mocker):
+        get_all_channels_mocker.return_value = [
+            dict(name='channel1', id=9999),
+            dict(name='channel2', id=8888),
+        ]
+
+        entry = {'entry_id': 1, 'latitude': '1', 'longitude': '1'}
+        get_and_format_data_for_channel_mocker.return_value = [entry]
+
+        channel_info = get_and_format_data_for_channels(channel_ids=['9999'])
+        assert len(channel_info) == 1
+
+        channel1 = Channel.objects.get(name='channel1')
+        assert channel1.channel_id == 9999
+        assert channel1.channel_type is not None
+
+        assert len(channel_info[9999]['data']) == 1
+        assert channel_info[9999]['data'][0].get('entry_id') == 1
+        assert channel_info[9999]['data'][0].get('latitude') == '1'
+        assert channel_info[9999]['data'][0].get('longitude') == '1'
+
+        channel_info = get_and_format_data_for_channels(channel_ids=['8888'])
+        assert len(channel_info) == 1
+
+        channel2 = Channel.objects.get(name='channel2')
+        assert channel2.channel_id == 8888
+        assert channel2.channel_type is not None
+
+        assert len(channel_info[8888]['data']) == 1
+        assert channel_info[8888]['data'][0].get('entry_id') == 1
+        assert channel_info[8888]['data'][0].get('latitude') == '1'
+        assert channel_info[8888]['data'][0].get('longitude') == '1'
+
+        channel_info = get_and_format_data_for_channels(channel_ids=['8888', '9999'])
         assert len(channel_info) == 2
 
         channel1 = Channel.objects.get(name='channel1')

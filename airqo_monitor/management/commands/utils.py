@@ -6,6 +6,7 @@ from airqo_monitor.models import (
     GlobalVariable,
     MalfunctionReason,
 )
+from airqo_monitor.utils import update_last_channel_update_time
 
 def create_basic_test_data():
     # ChannelType
@@ -18,6 +19,7 @@ def create_basic_test_data():
 
     # Malfunction detection variables
     GlobalVariable.objects.get_or_create(key='LAST_CHANNEL_UPDATE_TIME')
+    update_last_channel_update_time()
 
     low_battery_cutoff, _ = GlobalVariable.objects.get_or_create(key='LOW_BATTERY_CUTOFF')
     low_battery_cutoff.value = '0.3'

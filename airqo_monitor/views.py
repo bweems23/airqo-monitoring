@@ -15,7 +15,10 @@ from airqo_monitor.models import Incident
 from airqo_monitor.malfunction_detection.get_malfunctions import (
     get_all_channel_malfunctions
 )
-from airqo_monitor.format_data import get_and_format_heatmap_data_for_all_channels
+from airqo_monitor.format_data import (
+    get_and_format_heatmap_data_for_all_channels,
+    get_and_format_heatmap_data_for_channels,
+)
 from airqo_monitor.models import (
     Channel,
     ChannelNote,
@@ -136,5 +139,15 @@ def update_incidents(request):
 def heatmap(request):
     start_time = datetime.utcnow() - timedelta(days=1)
     heatmap_data = get_and_format_heatmap_data_for_all_channels(start_time=start_time)
+    heatmap_json = simplejson.dumps(heatmap_data)
+    return render(request, "heatmap.html", context={"geojson_points": mark_safe(heatmap_data)})
+
+def heatmap_with_filter(request, channel_ids):
+    """
+    Takes in comma separated list of thingspeak channel_ids and filters heatmap data to
+    only show data for those channels.
+    """
+    start_time = datetime.utcnow() - timedelta(days=1)
+    heatmap_data = get_and_format_heatmap_data_for_channels(start_time=start_time, channel_ids=channel_ids.split(','))
     heatmap_json = simplejson.dumps(heatmap_data)
     return render(request, "heatmap.html", context={"geojson_points": mark_safe(heatmap_data)})
