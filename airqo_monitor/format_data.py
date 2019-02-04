@@ -114,8 +114,48 @@ def get_and_format_data_for_all_channels(start_time=None, end_time=None):
 
     return all_channels_dict
 
+
+def get_and_format_data_for_channels(channel_ids, start_time=None, end_time=None):
+    update_all_channel_data()
+
+    channels_dict = dict()
+
+    channel_id_ints = [int(channel_id) for channel_id in channel_ids]
+    channels = Channel.objects.filter(channel_id__in=channel_id_ints, is_active=True)
+
+    for channel in channels:
+        data = get_and_format_data_for_channel(channel, start_time=start_time, end_time=end_time)
+        channels_dict[channel.channel_id] = {'channel': channel, 'data': data}
+
+    return channels_dict
+
+
 def get_and_format_heatmap_data_for_all_channels(start_time=None, end_time=None):
     all_channels_dict = get_and_format_data_for_all_channels(start_time, end_time)
+    geojson_data = {"type": "FeatureCollection", "features": []}
+
+    for channel_info in all_channels_dict.values():
+        if channel_info["channel"].channel_type.name == AIRQO_CHANNEL_TYPE:
+            for data_entry in channel_info["data"]:
+                geojson_data["features"].append({
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [data_entry["longitude"], data_entry["latitude"]],
+                    },
+                })
+
+    return geojson_data
+
+def get_and_format_heatmap_data_for_channels(start_time=None, end_time=None, channel_ids=None):
+    if not channel_ids:
+        return get_and_format_heatmap_data_for_all_channels(start_time, end_time)
+
+    all_channels_dict = get_and_format_data_for_channels(
+        start_time=start_time,
+        end_time=end_time,
+        channel_ids=channel_ids,
+    )
     geojson_data = {"type": "FeatureCollection", "features": []}
 
     for channel_info in all_channels_dict.values():
