@@ -143,7 +143,7 @@ def heatmap(request):
 
     start_time = None
     end_time = None
-    channel_ids = queries.get('channel_ids', None)
+    channel_ids = None
 
     start_time_str = queries.get('start_time', None)
     if start_time_str:
@@ -156,6 +156,10 @@ def heatmap(request):
     if end_time_str:
         # TODO: implement parsing the time string
         pass
+
+    channel_ids_str = queries.get('channel_ids', None)
+    if channel_ids_str:
+        channel_ids = channel_ids_str[0].split(',')
 
     heatmap_data = get_and_format_heatmap_data_for_channels(
         start_time=start_time,
