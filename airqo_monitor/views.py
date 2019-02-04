@@ -6,6 +6,7 @@ from django.http import Http404, HttpResponse
 from django.utils.safestring import mark_safe
 import json as simplejson
 from datetime import datetime, timedelta
+from urllib import parse
 
 from airqo_monitor.constants import (
     PYTZ_KAMPALA_STRING,
@@ -137,17 +138,29 @@ def update_incidents(request):
     return redirect('/')
 
 def heatmap(request):
-    start_time = datetime.utcnow() - timedelta(days=1)
-    heatmap_data = get_and_format_heatmap_data_for_all_channels(start_time=start_time)
-    heatmap_json = simplejson.dumps(heatmap_data)
-    return render(request, "heatmap.html", context={"geojson_points": mark_safe(heatmap_data)})
+    query_string = request.META.get('QUERY_STRING')
+    queries = parse.parse_qs(query_string)
 
-def heatmap_with_filter(request, channel_ids):
-    """
-    Takes in comma separated list of thingspeak channel_ids and filters heatmap data to
-    only show data for those channels.
-    """
-    start_time = datetime.utcnow() - timedelta(days=1)
-    heatmap_data = get_and_format_heatmap_data_for_channels(start_time=start_time, channel_ids=channel_ids.split(','))
+    start_time = None
+    end_time = None
+    channel_ids = queries.get('channel_ids', None)
+
+    start_time_str = queries.get('start_time', None)
+    if start_time_str:
+        # TODO: implement parsing the time string
+        pass
+    else:
+        start_time = datetime.utcnow() - timedelta(days=1)
+
+    end_time_str = queries.get('end_time', None)
+    if end_time_str:
+        # TODO: implement parsing the time string
+        pass
+
+    heatmap_data = get_and_format_heatmap_data_for_channels(
+        start_time=start_time,
+        end_time=end_time,
+        channel_ids=channel_ids,
+    )
     heatmap_json = simplejson.dumps(heatmap_data)
     return render(request, "heatmap.html", context={"geojson_points": mark_safe(heatmap_data)})
