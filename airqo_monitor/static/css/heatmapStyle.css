@@ -20,3 +20,7 @@ html, body {
 #radiusNum, #intensityNum, #opacityNum {
   font-weight: 800;
 }
+
+.filter{
+  padding: 10px;
+}
